@@ -1,4 +1,4 @@
-# 20241113
+# 13.11.2024
 START
 
 ## Burger
@@ -8,13 +8,13 @@ START
 ## Koch
 - Beginn der Topologieplanung
 
-# 20241114
+# 14.11.2024
 
 ## Koch
 - Abschluss der ersten groben Topologieplanung in GNS3 (Topo v1)
 - 3 FortiGate-Lizenzen beantragt und erhalten
 
-# 20241115
+# 15.11.2024
 
 ## Burger
 - Topo v1 in DrawIO zeichnen
@@ -24,3 +24,9 @@ START
 - Fehlende Details zur Topologie als Braindump zu Text gebracht (WIP)
 - Braindump von Word in Markdown umgeschrieben
 - Topo-Korrekturen bzgl Adressbereiche (falsche Subnetzmasken & Adressen)
+
+# 20.11.2024
+
+## Burger
+- Proxmox VE aufgesetzt
+- DrawIO Netzplan überarbeitet
