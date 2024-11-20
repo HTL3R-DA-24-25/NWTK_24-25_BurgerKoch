@@ -370,7 +370,20 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 
 ## PKI
 
-WTFFFF WIP
+2-Tier PKI
+
+Autoenrollment der Zertifikate per GPO für:
+* Clients
+* VPN
+
+### NPS
+
+Radius Server
+WIP
+
+### IPAM
+
+WIP
 
 ## GPOs
 
@@ -382,4 +395,4 @@ WTFFFF WIP
 * Locale Firewall am Client (per PS erstellen)
 * Removable Media verbieten
 * Registry-Zugriff einschränken
-
+* PKI-Zertifikate automatisch enrollen

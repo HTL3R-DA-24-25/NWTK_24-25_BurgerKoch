@@ -30,3 +30,19 @@ START
 ## Burger
 - Proxmox VE aufgesetzt
 - DrawIO Netzplan überarbeitet
+
+## Koch
+- GNS3 Netzplan ergänzt/überarbeitet (v2):
+    * Standort Praunstraße hinzugefügt
+    * AD-Child-Domäne extern.corp.gartenbedarf.com inkl RODC bei Kebapci
+    * CA zu Offline-Root-CA gemacht
+    * Adressbereiche erneut korrigiert
+    * Jump-Server, VPN-Server &  PAW zu Favoriten hinzugefügt
+    * Kebapci bekommt einen Web-Server
+- Am Protokoll/Dokumentationsbuch/Braindump weitergeschrieben
+
+## Demnächst
+- PKI planen
+- Restliche Linux-Services unterbringen
+- In DrawIO Netzplan Adressbereiche und den neuen Standort Praunstraße einzeichnen
+- Users & Computers des AD's (AGDLP, OU-Struktur, ...) planen
