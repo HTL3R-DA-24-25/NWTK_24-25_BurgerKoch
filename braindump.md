@@ -3,9 +3,9 @@ Gartenbedarfs GmbH
 
 CEO: Huber „Huber“ Huber
 
-Verkauft u.a. die Rasensprengerköpfe „Sprühkönig“ und „Sprengmeister“ als auch den Stoff „Huberit“
+Verkauft u.a. die Rasensprengerköpfe „Sprühkönig“ und „Sprengmeister“ als auch den Stoff „Huberit“.
 
-Die Mitarbeiter der Gartenbedarfs GmbH gehen gerne in ihren Mittagspausen zu Kebapci futtern
+Die Mitarbeiter der Gartenbedarfs GmbH gehen gerne in ihren Mittagspausen u.a. zu Kebapci futtern, ABER die Gartenbedarfs GmbH ist heimlich mit Kebapci geschäftlich und infrastrukturtechnisch verwickelt, da Kepabci als Front für die Schwarzarbeit und Geldwäsche der Gartenbedarfs GmbH genutzt wird.
 
 # Standorte
 
@@ -34,7 +34,7 @@ RIP:
 - Algorithmus: dsa-2048
 
 BGP:
-- Key-String: BeeGeePee?
+- Key-String: BeeGeePee!?
 - Algorithmus: ecdsa-384
 
 Das Backbone besteht aus drei AS’s:
@@ -53,7 +53,8 @@ Nutzt ein MPLS Overlay, OSPF Underlay
 BGP Features:
 * R-AS21-Internet dient als Route-Reflector
 * R-AS21-Internet teilt seine Default Route ins Internet den anderen Peers mit
-* WIP
+* Pfadmanipulation für redundante Versorgung des Wien Favoriten Standortes (gemeinsam mit AS100)
+* Distribution Lists
 
 Adressbereiche:
 * 172.16.20.0/30
@@ -70,7 +71,8 @@ Besteht aus insgesamt nur 2 Routern:
 Braucht kein Overlay/Underlay, nur BGP weil 2 Router
 
 BGP Features:
-* WIP
+* Pfadmanipulation für redundante Versorgung des Wien Favoriten Standortes (gemeinsam mit AS20)
+* Distribution Lists
 
 Addressbereiche:
 * 192.168.100.0/30
@@ -87,7 +89,7 @@ Besteht aus 4 Routern und 1 L2-Switch:
 Nutzt ein GRE & RIP Overlay, OSPF Underlay
 
 BGP Features:
-* WIP
+* Distribution Lists
 
 Adressbereiche:
 * 10.6.66.0/29
@@ -101,12 +103,14 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 
 ### VLANs
 
-* 20: Windows Clients
+* 20: Windows Clients (+ Private VLANs)
 * 30: Switch Management
+* 31: Switch R-SPAN Mirroring
 * 42: VoIP-Geräte
 * 100: Ubuntu Server (ohne Bastion)
 * 150: Bastion
 * 200: Windows Server
+* 201: Offline Root CA
 * 666: Blackhole
 
 ### Geräte
@@ -124,29 +128,47 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 - 3x Ubuntu-Server
   * Bastion (192.168.150.100)
   * Fav-File-Server (192.168.100.10)
-  * CA (192.168.100.20)
-- 2x Windows-Server
+  * VPN-Server (192.168.100.20)
+- 4x Windows-Server
   * DC1 (192.168.200.1)
   * DC2 (192.168.200.2)
+  * Jump-Server (192.168.200.10)
+  * Offline-Root-CA (192.168.201.1)
 - 2x Windows-Client
-  * Fav-W-Workstation-1 (DHCP --> Static Lease für 192.168.20.10)
+  * Fav-W-Workstation-1 (DHCP --> Static Lease für 192.168.20.10) (PAW)
   * Fav-W-Workstation-2 (DHCP)
 
 ### Features
 
 - FortiGates
   * HA-Cluster mit Fav-FW-1 & Fav-FW-2
-  * QoS für VoIP
+  * Traffic Shapping bzw QoS für VoIP/Video (Youtube)
   * SSL-Inspection
-  * IPsec VPN-Tunnel zu Dorf-FW
-  * DMVPN VPN-Tunnel zu Kebapci-FW
-  * WIP
+  * IPsec (IKEv2) VPN-Tunnel zu Dorf-FW mit PSK
+  * DMVPN (IKEv2) VPN-Tunnel zu Kebapci-FW
+  * Remote Access - "RAS" SSL-VPN
+  * Authentifizierter Internetzugang via captive portal (Network Policy Server)
+  * Telemetry Client(?)
+  * Malicious IPs outside in blocken
+  * Bogons blocken
+  * Webfilter
+  * DLP(?)
+  * Static NAT nach außen für irgendein Gerät
+  * PAT nach außen für non-VPN-Traffic
+  * Gateway-Redundanz mit IP-SLA
+  * Port-Forwarding von WireGuard-Traffic auf den internen VPN-Server
 - Switches
+  * PVST+
   * Management-Interface auf VLAN 30, IPs siehe oben
   * VTP
   * Bei redundanten Verbindungen untereinander EtherChannel mittels LACP aggregieren + Load-Balancing
   * Switchport Security (Hardening)
+    * Gehärteter PVST+
+    * Root-, Loop, BPDU-Guard
+    * DHCP Snooping, Dynamic ARP inspection (DAI)
+    * Blackhole VLAN auf unused Interfaces
   * QoS für VoIP
+  * R-SPAN zum Fav-File-Server
 - IP-Phone
   * Kann das IP-Phone-Langenzersdorf anrufen und telefonieren ohne Qualitätsverluste
 - Bastion
@@ -154,17 +176,28 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 - Fav-File-Server
   * SMB-Share
   * Synchronisiert seine Dateien mit Dorf-File-Server mittels lsyncd
-- CA
-  * WIP
+  * Erhält R-SPAN Daten der Fav-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
+- VPN-Server
+  * WireGuard VPN-Server
+- Offline-Root-CA
+  * NICHT Teil der AD-Domäne
+  * Ist abgekapselt von den restlichen Netzwerken, wird nur zur Erneuerung der Zertifikate wieder kurz dazugeschalten
 - DCs
+  * Nutzen Windows Server Core
   * Hosten die AD-Domäne corp.gartenbedarf.com
   * FSMO-Rollen: DC1 ist DNM und PDC, DC2 ist SM, RID Pool Manager und IM
   * DC1 ist DHCP Server, DC2 dient als Failover --> Fav-W-Workstation-1 bekommt Static Lease
   * SSH-Server ist an und PowerShell-Remoting ist erlaubt
   * Schickt mittels Windows-Prometheus-Exporter Daten an den Grafana Server in Langenzersdorf
+  * Dienen als NTP-Server
   * *für weitere AD-Details siehe unten "Active Directory"*
+- Jump-Server
+  * Nutzt Windows Server GUI
+  * Von der PAW aus per RDP und PS/SSH erreichbar
+  * Kann auf die DCs per PS/SSH
 - Windows Workstations
   * Teil des AD
+  * W-Workstation-1 ist PAW (VIP-Zugriff auf FortiGate & Jump Server)
 
 ## Langenzersdorf
 
@@ -174,9 +207,10 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 
 ### VLANs
 
-* 10: Windows Clients
+* 10: Linux Clients
 * 20: Windows Clients
 * 30: Switch Management
+* 31: Switch R-SPAN Mirroring
 * 42: VoIP-Geräte
 * 100: Ubuntu Server
 * 666: Blackhole
@@ -200,19 +234,32 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 ### Features
 
 - FortiGate
-  * QoS für VoIP
+  * Traffic Shapping bzw QoS für VoIP/Video (Youtube)
   * SSL-Inspection
-  * IPsec VPN-Tunnel zu Fav-FW-1 & 2
-  * WIP
+  * IPsec (IKEv2) VPN-Tunnel zu Fav-FW-1 & 2 mit PSK
+  * Remote Access - "RAS" SSL-VPN
+  * Authentifizierter Internetzugang via captive portal (Network Policy Server)
+  * Telemetry Client(?)
+  * Malicious IPs outside in blocken
+  * Bogons blocken
+  * Webfilter
+  * DLP(?)
+  * Static NAT nach außen für irgendein Gerät
+  * PAT nach außen für non-VPN-Traffic
+  * Gateway-Redundanz mit IP-SLA
 - Switch
   * Management-Interface auf VLAN 30, IP siehe oben
   * Switchport Security (Hardening)
+    * Root-, Loop, BPDU-Guard
+    * DHCP Snooping, Dynamic ARP inspection (DAI)
+    * Blackhole VLAN auf unused Interfaces
   * QoS für VoIP
 - IP-Phone
   * Kann das IP-Phone-Favoriten anrufen und telefonieren ohne Qualitätsverluste
 - Dorf-File-Server
   * SMB-Share
   * Synchronisiert seine Dateien mit Fav-File-Server mittels lsyncd
+  * Erhält R-SPAN Daten des Dorf-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
 - Linux Workstations
   * WIP
 - Windows Workstations
@@ -238,19 +285,92 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 
 - pfSense
   * DMVPN VPN-Tunnel zu Fav-FW-1 & 2
-  * WIP
+  * PAT nach außen für non-VPN-Traffic
 - Switch
   * Switchport Security (Hardening)
+    * Root-, Loop, BPDU-Guard
+    * DHCP Snooping, Dynamic ARP inspection (DAI)
+    * Blackhole VLAN auf unused Interfaces
 - Windows Clients
   * WIP
 
+## Praunstraße
+
+172.16.69.0/24
+
+### Geräte
+
+- 1x Ubuntu-Server (pfSense)
+  * Burger-FW (172.16.69.254)
+- 1x L2-Switch
+  * Burger-SW
+- 1x Linux-Client
+  * Burger-Workstation (DHCP)
+
+### Features
+
+- pfSense
+  * PAT nach außen für non-VPN-Traffic
+- Switch
+  * Switchport Security (Hardening)
+    * Root-, Loop, BPDU-Guard
+    * DHCP Snooping, Dynamic ARP inspection (DAI)
+    * Blackhole VLAN auf unused Interfaces
+- Linux Client
+  * RAS WireGuard VPN-Tunnel zu Wien-Favoriten
+
 # Active Directory
 
-corp.gartenbedarf.com
+Root-Domain: corp.gartenbedarf.com
+Sonstige Domains: extern.corp.gartenbedarf.com
 
-Streckt sich über die beiden Standorte Wien Favoriten und Langenzersdorf, wobei beide DCs in Favoriten stehen
+Streckt sich über die Standorte Wien Favoriten, Langenzersdorf und Kebapci, wobei beide Root-DCs in Favoriten stehen 
 
-WIP
+## Geräte
+
+### Domain Controller
+
+Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
+
+|Bezeichnung|IP-Adresse|FQDN|FSMO-Rollen|Read-Only|
+|---|---|---|---|
+|DC1|192.168.200.1|dc1.corp.gartenbedarf.com|DNM, PDC|Nein|
+|DC2|192.168.200.2|dc2.corp.gartenbedarf.com|SM, RIDPM, IM|Nein|
+|RODC|172.16.0.10|dc.extern.corp.gartenbedarf.com|-|Ja|
+
+* DC1 ist DHCP Server, DC2 dient als Failover --> Fav-W-Workstation-1 bekommt Static Lease
+* RODC ist Read-Only (duh)
+* SSH-Server ist an und PowerShell-Remoting ist erlaubt
+* Schicken mittels Windows-Prometheus-Exporter Daten an den Grafana Server in Langenzersdorf
+* Root-DCs dienen als NTP-Server
+
+### Jump-Server
+
+|Bezeichnung|IP-Adresse|FQDN|
+|---|---|---|---|
+|DC1|192.168.200.10|jump.corp.gartenbedarf.com|
+
+* WIP
+
+### Workstations
+
+|Bezeichnung|IP-Adresse|FQDN|PAW|
+|---|---|---|---|
+|Fav-W-Workstation-1|DHCP, Static Lease 192.168.20.10|work1.corp.gartenbedarf.com|Ja|
+|Fav-W-Workstation-2|DHCP|work2.corp.gartenbedarf.com|Nein|
+
+* Die Fav-W-Workstation-1 ist eine Priviliged Access Workstation (PAW), und kann u.a. deswegen folgende besondere Sachen:
+  * Auf den Jump-Server per RDP und SSH zugreifen
+
+## Users & Computers
+
+### AGDLP
+
+### OU-Struktur
+
+## PKI
+
+WTFFFF WIP
 
 ## GPOs
 
@@ -263,4 +383,3 @@ WIP
 * Removable Media verbieten
 * Registry-Zugriff einschränken
 
-WIP
