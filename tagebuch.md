@@ -46,3 +46,13 @@ START
 - Restliche Linux-Services unterbringen
 - In DrawIO Netzplan Adressbereiche und den neuen Standort Praunstraße einzeichnen
 - Users & Computers des AD's (AGDLP, OU-Struktur, ...) planen
+
+# 04.12.2024
+
+## Koch
+- GNS3 Netzplan ergänzt/überarbeitet (v3):
+    * AS666 zum offiziellen MPLS-Backbone gemacht und mit extra Routern/Switches befüllt
+    * Öffentlicher Adressbereich für Praunstraße ergänzt
+- Grundkonfigurations-Vorlage erstellt
+- Alle Backbone-Skripts geschrieben
+- Am Protokoll/Dokumentationsbuch/Braindump weitergeschrieben

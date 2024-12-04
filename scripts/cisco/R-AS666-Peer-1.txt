@@ -1,0 +1,89 @@
+! David Koch & Julian Burger 5CN
+! Little Big Topo
+! R-AS666-Peer-1
+! ============================
+
+en
+conf t
+hostname R-AS666-Peer-1
+no ip domain-lookup
+ip domain name 5CN
+banner motd *!!!KEEP OUT - Property of Koch & Burger!!!*
+service password-encryption
+username cisco priv 15
+username cisco algorithm-type scrypt secret cisco
+crypto key generate rsa usage-keys modulus 1024
+ip ssh version 2
+
+line vty 0 15
+login local
+logging synchronous
+exec-timeout 0 0
+transport input telnet ssh
+exit
+
+line con 0
+logging synchronous
+exec-timeout 0 0
+exit
+
+key chain 1
+key 1
+key-string ciscocisco
+cryptographic-algorithm hmac-sha-512
+ex
+
+int g0/0
+desc to_R_AS22_Peer
+ip address 45.84.107.1 255.255.255.252
+no shut
+ex
+
+int g0/1
+desc to_Burger_FW
+ip address 31.6.14.0 255.255.255.0
+no shut
+ex
+
+int g0/2
+desc to_R_AS666_BB_9
+ip address 10.6.66.50 255.255.255.252
+ip ospf authentication key-chain 1
+no shut
+ex
+
+int g0/3
+desc to_SW_AS666_BB_1
+ip address 10.6.66.53 255.255.255.248
+ip ospf authentication key-chain 1
+no shut
+ex
+
+int lo1
+description Loopback_for_BGP
+ip address 6.6.6.1 255.255.255.255
+ip ospf authentication key-chain 1
+no shut
+ex
+
+router ospf 1
+router-id 6.6.6.1
+network 6.6.6.1 0.0.0.0 area 1
+network 10.66.6.48 0.0.0.3 area 1
+network 10.66.6.52 0.0.0.7 area 1
+ex
+
+router bgp 666
+bgp log-neighbor-changes
+network 45.84.107.0 mask 255.255.255.252
+network 31.6.14.0 mask 255.255.255.0
+neighbor 45.84.107.1 remote-as 20
+neighbor 45.84.107.1 update-source g0/0
+neighbor 6.6.6.1 remote-as 666
+neighbor 6.6.6.1 update-source lo1
+neighbor 6.6.6.3 remote-as 666
+neighbor 6.6.6.3 update-source lo1
+ex
+
+end
+wr

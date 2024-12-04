@@ -1,0 +1,68 @@
+! David Koch & Julian Burger 5CN
+! Little Big Topo
+! R-AS666-BB-6
+! ============================
+
+en
+conf t
+hostname R-AS666-BB-6
+no ip domain-lookup
+ip domain name 5CN
+banner motd *!!!KEEP OUT - Property of Koch & Burger!!!*
+service password-encryption
+username cisco priv 15
+username cisco algorithm-type scrypt secret cisco
+crypto key generate rsa usage-keys modulus 1024
+ip ssh version 2
+
+line vty 0 15
+login local
+logging synchronous
+exec-timeout 0 0
+transport input telnet ssh
+exit
+
+line con 0
+logging synchronous
+exec-timeout 0 0
+exit
+
+key chain 1
+key 1
+key-string ciscocisco
+cryptographic-algorithm hmac-sha-512
+ex
+
+int g0/0
+desc to_R_AS666_BB_8
+ip address 10.6.66.36 255.255.255.252
+ip ospf authentication key-chain 1
+mpls ip
+no shut
+ex
+
+int g0/2
+desc to_R_AS666_BB_7
+ip address 10.6.66.33 255.255.255.252
+ip ospf authentication key-chain 1
+mpls ip
+no shut
+ex
+
+int g0/3
+desc to_SW_AS666_BB_5
+ip address 10.6.66.30 255.255.255.252
+ip ospf authentication key-chain 1
+mpls ip
+no shut
+ex
+
+router ospf 1
+router-id 10.6.66.30
+network 10.66.6.28 0.0.0.3 area 1
+network 10.66.6.32 0.0.0.3 area 1
+network 10.66.6.36 0.0.0.3 area 1
+ex
+
+end
+wr
