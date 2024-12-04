@@ -56,3 +56,11 @@ START
 - Grundkonfigurations-Vorlage erstellt
 - Alle Backbone-Skripts geschrieben
 - Am Protokoll/Dokumentationsbuch/Braindump weitergeschrieben
+
+## Burger
+- [VMware Workstation Pro Automatisierung](https://github.com/cauvmou/vmrest-rs)
+    * vmrest-API implementierung
+    * VM Registrierung
+    * VM Clonen
+    * VM Netzwerk Adapter verwalten
+    * Host VMNics verwalten
