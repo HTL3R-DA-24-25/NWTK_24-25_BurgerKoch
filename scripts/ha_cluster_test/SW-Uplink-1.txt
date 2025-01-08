@@ -1,0 +1,70 @@
+! David Koch & Julian Burger 5CN
+! Little Big Topo (HA Cluster Experiment)
+! SW-Uplink-1
+! ============================
+
+en
+conf t
+hostname SW-Uplink-1
+no ip domain-lookup
+ip domain name 5CN
+banner motd *!!!KEEP OUT - Property of Koch & Burger!!!*
+service password-encryption
+username cisco priv 15
+username cisco algorithm-type scrypt secret cisco
+crypto key generate rsa usage-keys modulus 1024
+ip ssh version 2
+
+line vty 0 15
+login local
+logging synchronous
+exec-timeout 0 0
+transport input telnet ssh
+exit
+
+line con 0
+logging synchronous
+exec-timeout 0 0
+exit
+
+sp mode rapid-pvst
+sp vlan 10 priority 4096
+sp vlan 20 priority 4096
+
+port-channel load-balance src-mac
+
+vlan 10
+name VLAN_10
+ex
+vlan 20
+name VLAN_20
+ex
+
+int g0/0
+switchport trunk encap dot1q
+switchport mode trunk
+no shut
+ex
+
+int g3/0
+switchport mode access
+switchport access vlan 10
+no shut
+ex
+
+int range g1/0-1
+switchport trunk encap dot1q
+switchport mode trunk
+channel-group 1 mode active
+no shut
+ex
+
+int port-channel1
+switchport trunk encap dot1q
+switchport mode trunk
+no shut
+ex
+
+
+end
+wr

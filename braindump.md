@@ -157,6 +157,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * PAT nach außen für non-VPN-Traffic
   * Gateway-Redundanz mit IP-SLA
   * Port-Forwarding von WireGuard-Traffic auf den internen VPN-Server
+  * DHCP-Server für die Workstations
 - Switches
   * PVST+
   * Management-Interface auf VLAN 30, IPs siehe oben
@@ -210,7 +211,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 * 10: Linux Clients
 * 20: Windows Clients
 * 30: Switch Management
-* 31: Switch R-SPAN Mirroring
+* 31: Switch (R-SPAN) Mirroring
 * 42: VoIP-Geräte
 * 100: Ubuntu Server
 * 666: Blackhole
@@ -224,8 +225,8 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 - 1x IP-Phone
   * IP-Phone-Langenzersdorf (10.10.42.1)
 - 2x Ubuntu-Server
-  * Dorf-File-Server (10.10.100.10)
-  * Fav-File-Server (10.10.100.1 & Docker-Container: 10.10.100.11, 10.10.100.12, 10.10.100.13) 
+  * Dorf-File-Server (quasi Syslog?) (10.10.100.1)
+  * Docker-Host (10.10.100.10 & Docker-Container: 10.10.100.11, 10.10.100.12, 10.10.100.13, 10.10.100.14) 
 - 1x Linux-Client
   * Dorf-L-Workstation (DHCP)
 - 1x Windows-Client
@@ -242,11 +243,11 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * Telemetry Client(?)
   * Malicious IPs outside in blocken
   * Bogons blocken
-  * Webfilter
+  * Webfilter (x.com und htlrennweg.at blockiert)
   * DLP(?)
   * Static NAT nach außen für irgendein Gerät
   * PAT nach außen für non-VPN-Traffic
-  * Gateway-Redundanz mit IP-SLA
+  * DHCP-Server für die Workstations
 - Switch
   * Management-Interface auf VLAN 30, IP siehe oben
   * Switchport Security (Hardening)
@@ -254,12 +255,13 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
     * DHCP Snooping, Dynamic ARP inspection (DAI)
     * Blackhole VLAN auf unused Interfaces
   * QoS für VoIP
+  * Spiegelt Traffic mittels SPAN an den Dorf-File-Server
 - IP-Phone
   * Kann das IP-Phone-Favoriten anrufen und telefonieren ohne Qualitätsverluste
 - Dorf-File-Server
   * SMB-Share
   * Synchronisiert seine Dateien mit Fav-File-Server mittels lsyncd
-  * Erhält R-SPAN Daten des Dorf-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
+  * Erhält SPAN-Daten des Dorf-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
 - Linux Workstations
   * WIP
 - Windows Workstations
@@ -333,7 +335,7 @@ Streckt sich über die Standorte Wien Favoriten, Langenzersdorf und Kebapci, wob
 Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 
 |Bezeichnung|IP-Adresse|FQDN|FSMO-Rollen|Read-Only|
-|---|---|---|---|
+|---|---|---|---|---|
 |DC1|192.168.200.1|dc1.corp.gartenbedarf.com|DNM, PDC|Nein|
 |DC2|192.168.200.2|dc2.corp.gartenbedarf.com|SM, RIDPM, IM|Nein|
 |RODC|172.16.0.10|dc.extern.corp.gartenbedarf.com|-|Ja|
@@ -347,7 +349,7 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 ### Jump-Server
 
 |Bezeichnung|IP-Adresse|FQDN|
-|---|---|---|---|
+|---|---|---|
 |DC1|192.168.200.10|jump.corp.gartenbedarf.com|
 
 * WIP

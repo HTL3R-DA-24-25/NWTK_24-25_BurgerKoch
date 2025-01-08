@@ -1,0 +1,45 @@
+# admin/admin
+
+config system global
+    set hostname FW-1
+end
+
+config system ha
+    set mode a-a
+    set group-id 1
+    set group-name Koch_Burger_LBT_Test_Cluster
+    set password ganzgeheim123!
+    set hbdev port1 10 port2 20
+end
+
+# restart?
+
+config system interface
+    edit port3
+        set role wan
+        set allowaccess ping
+    next
+    edit VLAN_10
+        set vdom root
+        set interface port3
+        set type vlan
+        set vlanid 10
+        set mode static
+        set ip 34.0.0.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_20
+        set vdom root
+        set interface port3
+        set type vlan
+        set vlanid 20
+        set mode static
+        set ip 35.0.0.254 255.255.255.0
+        set allowaccess ping
+    next
+end
+
+config router static
+    edit 1
+
+

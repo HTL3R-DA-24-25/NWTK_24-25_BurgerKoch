@@ -1,0 +1,297 @@
+# admin/admin
+
+config system global
+    set hostname Dorf-FW
+    set admintimeout 30
+    set timezone 26
+end
+
+config system interface
+    edit port0
+        set desc "to_ISP_AS666"
+        set mode static
+        set ip 87.120.166.1 255.255.255.0
+        set role wan
+        set allowaccess ping
+    next
+    edit port1
+        set role lan
+        set allowaccess ping
+    next
+    edit VLAN_10
+        set desc "Linux Clients"
+        set vdom root
+        set interface port1
+        set type vlan
+        set vlanid 10
+        set mode static
+        set ip 10.10.10.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_20
+        set desc "Windows Clients"
+        set vdom root
+        set interface port1
+        set type vlan
+        set vlanid 20
+        set mode static
+        set ip 10.10.20.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_30
+        set desc "Switch Management"
+        set vdom root
+        set interface port1
+        set type vlan
+        set vlanid 30
+        set mode static
+        set ip 10.10.30.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_31
+        set desc "Switch R-SPAN Mirroring"
+        set vdom root
+        set interface port1
+        set type vlan
+        set vlanid 31
+        set mode static
+        set ip 10.10.31.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_42
+        set desc "VoIP-Geräte"
+        set vdom root
+        set interface port1
+        set type vlan
+        set vlanid 42
+        set mode static
+        set ip 10.10.42.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_100
+        set desc "Ubuntu Server"
+        set vdom root
+        set interface port1
+        set type vlan
+        set vlanid 100
+        set mode static
+        set ip 10.10.100.254 255.255.255.0
+        set allowaccess ping
+    next
+end
+
+config router static
+    edit 1
+        set destination 0.0.0.0 0.0.0.0
+        set gateway 87.120.166.254
+    next
+end
+
+config firewall ssl-ssh-profile
+    edit custom-deep-inspection
+        config ssl
+            set inspect-all deep-inspection
+            set client-certificate inspect
+            set unsupported-ssl-version block
+            set unsupported-ssl-cipher block
+            set unsupported-ssl-negotiation block
+            set expired-server-cert block
+            set untrusted-server-cert block
+            set cert-validation-timeout ignore
+            set cert-validation-failure block
+            set sni-server-cert-check strict
+            set min-allowed-ssl-version tls-1.3
+        end
+        config https
+            set client-certificate inspect
+            set unsupported-ssl-version block
+            set unsupported-ssl-cipher block
+            set unsupported-ssl-negotiation block
+        end
+        set server-cert-mode re-sign
+    next
+end
+
+# traffic shaping
+# voip high prio (medium band)
+# youtube medium prio (viel band)
+# rest low prio (der rest? band)
+config firewall shaper traffic-shaper
+    edit high-priority
+        set per-policy enable
+        set priority high
+        set bandwidth-unit kbps
+        set guaranteed-bandwidth 300
+        set maximum-bandwidth 1000000
+    next
+    edit medium-priority
+        set per-policy enable
+        set priority medium
+        set bandwidth-unit kbps
+        set guaranteed-bandwidth 1500
+        set maximum-bandwidth 1000000
+    next
+    edit low-priority
+        set per-policy enable
+        set priority low
+        set bandwidth-unit kbps
+        set maximum-bandwidth 1000000
+    next
+end
+
+config firewall shaping-policy
+    edit 1
+        set name VOIP
+        set status enable
+        set ip-version 4
+        set srcaddr 10.10.42.1
+        set dstaddr 192.168.42.1
+        set traffic-shaper high-priority
+    next
+    edit 2
+        set name YT
+        set status enable
+        set ip-version 4
+        set srcintf VLAN_10, VLAN_20
+        set internet-service enable
+        set application 16040  # YTs app ID
+        set traffic-shaper medium-priority
+    next
+end
+
+# custom ip for nat traffic outside
+config firewall ippool
+    edit "NAT_Public_IP_Pool"
+        set startip 87.120.166.69
+        set endip 87.120.166.69
+        set type one-to-one
+    next
+end
+
+config firewall policy
+    edit 1
+        set name "non-VPN-PAT-to-Outside"
+        set srcintf "port1"
+        set dstintf "port2"
+        set srcaddr "all"
+          # WARNING: CHANGE THIS FOR VPN?
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set nat enable
+        set ippool enable
+        set poolname "NAT_Public_IP_Pool"
+        set logtraffic all
+    next
+end
+
+# bogon definition weil es die nicht schon gibt anscheinend
+config firewall address
+    edit "Bogon_0.0.0.0_8"
+        set subnet 0.0.0.0 255.0.0.0
+    next
+    edit "Bogon_10.0.0.0_8"
+        set subnet 10.0.0.0 255.0.0.0
+    next
+    edit "Bogon_100.64.0.0_10"
+        set subnet 100.64.0.0 255.192.0.0
+    next
+    edit "Bogon_127.0.0.0_8"
+        set subnet 127.0.0.0 255.0.0.0
+    next
+    edit "Bogon_169.254.0.0_16"
+        set subnet 169.254.0.0 255.255.0.0
+    next
+    edit "Bogon_172.16.0.0_12"
+        set subnet 172.16.0.0 255.240.0.0
+    next
+    edit "Bogon_192.0.0.0_24"
+        set subnet 192.0.0.0 255.255.255.0
+    next
+    edit "Bogon_192.0.2.0_24"
+        set subnet 192.0.2.0 255.255.255.0
+    next
+    edit "Bogon_192.88.99.0_24"
+        set subnet 192.88.99.0 255.255.255.0
+    next
+    edit "Bogon_192.168.0.0_16"
+        set subnet 192.168.0.0 255.255.0.0
+    next
+    edit "Bogon_198.18.0.0_15"
+        set subnet 198.18.0.0 255.254.0.0
+    next
+    edit "Bogon_198.51.100.0_24"
+        set subnet 198.51.100.0 255.255.255.0
+    next
+    edit "Bogon_203.0.113.0_24"
+        set subnet 203.0.113.0 255.255.255.0
+    next
+    edit "Bogon_224.0.0.0_4"
+        set subnet 224.0.0.0 240.0.0.0
+    next
+    edit "Bogon_240.0.0.0_4"
+        set subnet 240.0.0.0 240.0.0.0
+    next
+    edit "Bogon_255.255.255.255_32"
+        set subnet 255.255.255.255 255.255.255.255
+    next
+end
+
+config firewall addrgrp
+    edit "Bogon_Group"
+        set member "Bogon_0.0.0.0_8" "Bogon_10.0.0.0_8" "Bogon_100.64.0.0_10" "Bogon_127.0.0.0_8" "Bogon_169.254.0.0_16" "Bogon_172.16.0.0_12" "Bogon_192.0.0.0_24" "Bogon_192.0.2.0_24" "Bogon_192.88.99.0_24" "Bogon_192.168.0.0_16" "Bogon_198.18.0.0_15" "Bogon_198.51.100.0_24" "Bogon_203.0.113.0_24" "Bogon_224.0.0.0_4" "Bogon_240.0.0.0_4" "Bogon_255.255.255.255_32"
+    next
+end
+
+config webfilter urlfilter
+    edit 1
+        set name "webfilter"
+        config entries
+            edit 1
+                set url "*x.com"
+                set type wildcard
+                set action block
+            next
+            edit 2
+                set url "www.htlrennweg.at"
+                set type simple
+                set action block
+            next
+        end
+    next
+end
+
+config webfilter profile
+    edit "webprofile"
+        config web
+            set urlfilter-table 1
+        end
+        config ftgd-wf
+        end
+    next
+end
+
+config firewall policy
+    edit 2
+        set name "WF"
+        set srcintf "port1"
+        set dstintf "port2"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set utm-status enable
+        set inspection-mode proxy
+        set logtraffic all
+        set webfilter-profile "webprofile"
+        set profile-protocol-options default
+        set ssl-ssh-profile custom-deep-inspection
+        # are we sure about this being here?
+        set nat enable
+    next
+end
+
+
+
