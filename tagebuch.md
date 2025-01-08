@@ -64,3 +64,13 @@ START
     * VM Clonen
     * VM Netzwerk Adapter verwalten
     * Host VMNics verwalten
+
+# 08.01.2025
+
+## Burger
+- Vollständige Aufsetzung des Docker-Hosts
+    * Nginx Webserver
+    * Bind9 DNS
+    * Prometheus
+    * Grafana
+- Begonnen mit der Überarbeitung des Netzplans/Topologie
