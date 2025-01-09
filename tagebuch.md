@@ -106,3 +106,10 @@ Demnächst:
 - AD ausarbeiten
 - Erste zusammengefügte Topo ausprobieren
 - Dokumentation anhand DA-Typst-Vorlage aufsetzen
+
+# 09.01.2025
+
+## Koch
+- DC-Extern hinzufügen damit der RODC überhaupt funktioniert
+- Braindump ergänzt & Fehler ausgebessert
+- WIP Skripts für DCs erstellt
