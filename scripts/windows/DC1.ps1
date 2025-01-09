@@ -49,7 +49,7 @@ foreach ($currentOuter in $outer){
 
 Import-Module ActiveDirectory
 
-Invoke-WebRequest -Uri "https://github.com/HTL3R-DA-24-25/NWTK_24-25_BurgerKoch/blob/main/scripts/windows/groups.csv" -Outfile "C:\Windows\Temp\groups.csv"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/HTL3R-DA-24-25/NWTK_24-25_BurgerKoch/refs/heads/main/scripts/windows/groups.csv" -Outfile "C:\Windows\Temp\groups.csv"
 $groups = Import-Csv -Path "C:\Windows\Temp\groups.csv"
 
 foreach ($group in $groups) {
@@ -69,7 +69,7 @@ Add-ADGroupMember -Identity DL_Templates_R -Members G_Sales, G_Marketing, G_Tech
 Add-ADGroupMember -Identity DL_Templates_M -Members G_Management
 #>
 
-Invoke-WebRequest -Uri "https://github.com/HTL3R-DA-24-25/NWTK_24-25_BurgerKoch/blob/main/scripts/windows/users.csv" -Outfile "C:\Windows\Temp\users.csv"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/HTL3R-DA-24-25/NWTK_24-25_BurgerKoch/refs/heads/main/scripts/windows/users.csv" -Outfile "C:\Windows\Temp\users.csv"
 $users = Import-Csv -Path "C:\Windows\Temp\users.csv"
 
 # Iterate over each user and create them in the specified OU
