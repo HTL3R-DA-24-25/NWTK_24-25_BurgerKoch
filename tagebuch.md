@@ -74,3 +74,8 @@ START
     * Prometheus
     * Grafana
 - Begonnen mit der Überarbeitung des Netzplans/Topologie
+
+# 10.01.2024
+
+## Burger
+- Switch configuration am Standort Praunstraße
