@@ -1,0 +1,52 @@
+en
+conf t
+no ip domain-lookup
+hostname Burger-SW
+ip domain-name praunstrasse.local
+crypto key gen rsa usage mod 2048
+ip ssh version 2
+
+username cisco priv 15
+username cisco algorithm-type sha256 secret cisco
+
+line con 0
+login local
+logging sync
+exit
+
+line vty 0 1500
+login local
+transport input ssh
+logging sync
+exit
+
+vlan 666
+name BLACKHOLE
+exit
+
+vlan 10
+name BURGER-LAN
+exit
+
+int range gig 0/0 - 3 , gig 1/0 - 3 , gig 2/0 - 3 , gig 3/0 - 3
+switchport nonegotiate
+switchport port-security mac-address sticky
+switchport port-security aging time 20
+switchport mode access
+switchport access vlan 666
+shutdown
+exit
+
+int range gig 0/0 - 1
+switchport access vlan 10
+ip arp inspection trust
+no shutdown
+exit
+
+ip arp inspection vlan 10
+ip dhcp snooping vlan 10
+no spanning-tree vlan 1,10,666
+
+int gig 0/0
+ip dhcp snooping trust
+exit
