@@ -1,0 +1,5 @@
+erster anlauf mit redundanter switch anbindung am standort ins netzwerk hinein und zu den zwei isps nach außen (zwei verschiedene isps)
+
+active-active setup jaja
+
+

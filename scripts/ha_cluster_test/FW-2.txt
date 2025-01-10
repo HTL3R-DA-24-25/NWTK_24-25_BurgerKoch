@@ -1,0 +1,13 @@
+# admin/admin
+
+config system global
+    set hostname FW-2
+end
+
+config system ha
+    set mode a-a
+    set group-id 1
+    set group-name Koch_Burger_LBT_Test_Cluster
+    set password ganzgeheim123!
+    set hbdev port1 10 port2 20
+end

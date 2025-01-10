@@ -1,0 +1,4 @@
+"name";"path";"scope";"category"
+"G_AAA";"OU=Accounts,OU=Sales,DC=corp,DC=gartenbedarf,DC=com";"Global";"Security"
+"DL_AAA_R";"DC=corp,DC=gartenbedarf,DC=com";"DomainLocal";"Security"
+"DL_AAA_M";"DC=corp,DC=gartenbedarf,DC=com";"DomainLocal";"Security"

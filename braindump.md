@@ -79,12 +79,21 @@ Addressbereiche:
 
 ### AS666
 
-Besteht aus 4 Routern und 1 L2-Switch:
+Besteht aus 12 Routern und 2 L2-Switches:
 * R-AS666-Peer-1
 * R-AS666-Peer-2
 * R-AS666-Peer-3
-* R-AS666-BB
-* SW-AS666-BB
+* R-AS666-BB-1
+* R-AS666-BB-2
+* R-AS666-BB-3
+* R-AS666-BB-4
+* R-AS666-BB-5
+* R-AS666-BB-6
+* R-AS666-BB-7
+* R-AS666-BB-8
+* R-AS666-BB-9
+* SW-AS666-BB-1
+* SW-AS666-BB-2
 
 Nutzt ein GRE & RIP Overlay, OSPF Underlay
 
@@ -92,8 +101,19 @@ BGP Features:
 * Distribution Lists
 
 Adressbereiche:
-* 10.6.66.0/29
+* 10.6.66.0/30
+* 10.6.66.4/30
 * 10.6.66.8/30
+* 10.6.66.12/29
+* 10.6.66.20/30
+* 10.6.66.24/30
+* 10.6.66.28/30
+* 10.6.66.32/30
+* 10.6.66.36/30
+* 10.6.66.40/30
+* 10.6.66.44/30
+* 10.6.66.48/30
+* 10.6.66.52/29
 
 ## Wien Favoriten
 
@@ -129,11 +149,12 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * Bastion (192.168.150.100)
   * Fav-File-Server (192.168.100.10)
   * VPN-Server (192.168.100.20)
-- 4x Windows-Server
-  * DC1 (192.168.200.1)
-  * DC2 (192.168.200.2)
-  * Jump-Server (192.168.200.10)
-  * Offline-Root-CA (192.168.201.1)
+- 5x Windows-Server
+  * DC1 (192.168.200.1) (GUI)
+  * DC2 (192.168.200.2) (GUI)
+  * DC-Extern (192.168.200.3) (Core)
+  * Jump-Server (192.168.200.10) (GUI)
+  * Offline-Root-CA (192.168.201.1) (GUI)
 - 2x Windows-Client
   * Fav-W-Workstation-1 (DHCP --> Static Lease für 192.168.20.10) (PAW)
   * Fav-W-Workstation-2 (DHCP)
@@ -183,7 +204,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * NICHT Teil der AD-Domäne
   * Ist abgekapselt von den restlichen Netzwerken, wird nur zur Erneuerung der Zertifikate wieder kurz dazugeschalten
 - DCs
-  * Nutzen Windows Server Core
+  * DC1 und DC2 nutzen Windows Server GUI, DC-Extern nutzt Core
   * Hosten die AD-Domäne corp.gartenbedarf.com
   * FSMO-Rollen: DC1 ist DNM und PDC, DC2 ist SM, RID Pool Manager und IM
   * DC1 ist DHCP Server, DC2 dient als Failover --> Fav-W-Workstation-1 bekommt Static Lease
@@ -196,7 +217,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * Von der PAW aus per RDP und PS/SSH erreichbar
   * Kann auf die DCs per PS/SSH
 - Windows Workstations
-  * Teil des AD
+  * Sind Teil der extern.corp.gardenbedarf.com Domäne
   * W-Workstation-1 ist PAW (VIP-Zugriff auf FortiGate & Jump Server)
 
 ## Langenzersdorf
@@ -210,7 +231,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 * 10: Linux Clients
 * 20: Windows Clients
 * 30: Switch Management
-* 31: Switch R-SPAN Mirroring
+* 31: Switch (R-SPAN) Mirroring
 * 42: VoIP-Geräte
 * 100: Ubuntu Server
 * 666: Blackhole
@@ -224,8 +245,8 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 - 1x IP-Phone
   * IP-Phone-Langenzersdorf (10.10.42.1)
 - 2x Ubuntu-Server
-  * Dorf-File-Server (10.10.100.10)
-  * Fav-File-Server (10.10.100.1 & Docker-Container: 10.10.100.11, 10.10.100.12, 10.10.100.13) 
+  * Dorf-File-Server (quasi Syslog?) (10.10.100.1)
+  * Docker-Host (10.10.100.10 & Docker-Container: 10.10.100.11, 10.10.100.12, 10.10.100.13, 10.10.100.14) 
 - 1x Linux-Client
   * Dorf-L-Workstation (DHCP)
 - 1x Windows-Client
@@ -242,11 +263,11 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * Telemetry Client(?)
   * Malicious IPs outside in blocken
   * Bogons blocken
-  * Webfilter
+  * Webfilter (x.com und htlrennweg.at blockiert)
   * DLP(?)
   * Static NAT nach außen für irgendein Gerät
   * PAT nach außen für non-VPN-Traffic
-  * Gateway-Redundanz mit IP-SLA
+  * DHCP-Server für die Workstations
 - Switch
   * Management-Interface auf VLAN 30, IP siehe oben
   * Switchport Security (Hardening)
@@ -254,16 +275,23 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
     * DHCP Snooping, Dynamic ARP inspection (DAI)
     * Blackhole VLAN auf unused Interfaces
   * QoS für VoIP
+  * Spiegelt Traffic mittels SPAN an den Dorf-File-Server
 - IP-Phone
   * Kann das IP-Phone-Favoriten anrufen und telefonieren ohne Qualitätsverluste
 - Dorf-File-Server
   * SMB-Share
   * Synchronisiert seine Dateien mit Fav-File-Server mittels lsyncd
-  * Erhält R-SPAN Daten des Dorf-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
+  * Erhält SPAN-Daten des Dorf-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
+- Docker-Host
+  * Hostet folgende Services innerhalb von Docker-Containern mit eigenen IPs:
+    * Webserver (nginx) (.11)
+    * DNS Caching Forwarder (bind9) (.12)
+    * Grafana (.13)
+    * Prometheus (.14)
 - Linux Workstations
   * WIP
 - Windows Workstations
-  * Teil des AD
+  * Sind Teil der corp.gardenbedarf.com Domäne
 
 ## Kebapci
 
@@ -273,26 +301,33 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 
 - 1x Ubuntu-Server (pfSense)
   * Kebapci-FW (172.16.0.254)
+- 1x Ubuntu-Server
+  * Web-Server (172.16.0.20)
 - 1x L2-Switch
   * Kebapci-SW
-- 1x IP-Phone
-  * IP-Phone-Langenzersdorf (10.10.42.1)
-- 2x Windows-Client
-  * PC-1 (DHCP)
-  * PC-2 (DHCP)
+- 1x Windows-Client
+  * Client (DHCP --> Static Lease für 172.16.0.1)
+- 1x Windows-Server
+  * RODC (172.16.0.10) (Core)
 
 ### Features
 
 - pfSense
   * DMVPN VPN-Tunnel zu Fav-FW-1 & 2
   * PAT nach außen für non-VPN-Traffic
+  * Web-Server durch Port-Forwarding von außen erreichbar
 - Switch
   * Switchport Security (Hardening)
     * Root-, Loop, BPDU-Guard
     * DHCP Snooping, Dynamic ARP inspection (DAI)
     * Blackhole VLAN auf unused Interfaces
+- Web-Server
+  * Hostet mittels nginx eine Website
 - Windows Clients
-  * WIP
+  * Sind Teil der extern.corp.gardenbedarf.com Domäne
+- DC
+  * Repliziert den DC-Extern am Standort Wien Favoriten
+  * Ist ein RODC
 
 ## Praunstraße
 
@@ -333,7 +368,7 @@ Streckt sich über die Standorte Wien Favoriten, Langenzersdorf und Kebapci, wob
 Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 
 |Bezeichnung|IP-Adresse|FQDN|FSMO-Rollen|Read-Only|
-|---|---|---|---|
+|---|---|---|---|---|
 |DC1|192.168.200.1|dc1.corp.gartenbedarf.com|DNM, PDC|Nein|
 |DC2|192.168.200.2|dc2.corp.gartenbedarf.com|SM, RIDPM, IM|Nein|
 |RODC|172.16.0.10|dc.extern.corp.gartenbedarf.com|-|Ja|
@@ -347,10 +382,10 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 ### Jump-Server
 
 |Bezeichnung|IP-Adresse|FQDN|
-|---|---|---|---|
+|---|---|---|
 |DC1|192.168.200.10|jump.corp.gartenbedarf.com|
 
-* WIP
+* Kann per RDP und SSH auf die DCs zugreifen
 
 ### Workstations
 
@@ -370,7 +405,7 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 
 ## PKI
 
-2-Tier PKI
+1-Tier PKI
 
 Autoenrollment der Zertifikate per GPO für:
 * Clients
@@ -378,8 +413,10 @@ Autoenrollment der Zertifikate per GPO für:
 
 ### NPS
 
-Radius Server
-WIP
+Radius Server läuft als Service auf DC1
+Integration mit (also man kann sich dort mit AD-User authentifizieren):
+* Switches innerhalb der Firmenstandorte
+* FortiGate Captive Portal
 
 ### IPAM
 

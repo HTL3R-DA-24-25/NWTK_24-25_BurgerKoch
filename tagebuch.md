@@ -65,15 +65,54 @@ START
     * VM Netzwerk Adapter verwalten
     * Host VMNics verwalten
 
+# 11.12.2024
+
+## Koch
+- Recherche Konfiguration von HA-Cluster, Private VLANs, Webfilter auf FortiGate
+    * Active-Active Cluster für uns sinnvoller als Active-Passive
+- FortiGate-Featureset im Braindump erweitert
+- FortiGate-Grundkonfigurationsvorlage erstellt
+
+## Burger
+- PfSense Recherche
+
+# 18.12.2024
+
 # 08.01.2025
 
 ## Burger
+- Ergänzung Prometheus-Container zum Docker-Host in Langenzersdorf
 - Vollständige Aufsetzung des Docker-Hosts
-    * Nginx Webserver
+    * Nginx Webserver (inkl eigene Website :D)
     * Bind9 DNS
     * Prometheus
     * Grafana
 - Begonnen mit der Überarbeitung des Netzplans/Topologie
+
+## Koch
+- Ausarbeitung von der HA-Cluster-Konfiguration in Wien
+- Folgende Dorf-FW Features implementiert:
+    * Traffic Shapping bzw QoS für VoIP/Video (Youtube)
+    * SSL-Inspection
+    * Bogons blocken
+    * Webfilter (x.com und htlrennweg.at blockiert)
+    * Static NAT nach außen für irgendein Gerät (L & W Workstations auf 87.120.166.69)
+    * PAT nach außen für non-VPN-Traffic
+- Dorf-SW bis auf QoS konfiguriert
+- Kopierfehler im Braindump ausmerzen und Details ergänzen
+
+Demnächst:
+- VPNs zwischen Standorten konfigurieren
+- AD ausarbeiten
+- Erste zusammengefügte Topo ausprobieren
+- Dokumentation anhand DA-Typst-Vorlage aufsetzen
+
+# 09.01.2025
+
+## Koch
+- DC-Extern hinzufügen damit der RODC überhaupt funktioniert
+- Braindump ergänzt & Fehler ausgebessert
+- WIP Skripts für DCs erstellt
 
 # 10.01.2024
 
