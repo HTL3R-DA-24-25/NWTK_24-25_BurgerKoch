@@ -118,3 +118,9 @@ Demnächst:
 
 ## Burger
 - Switch configuration am Standort Praunstraße
+
+# 11.01.2024
+
+## Koch
+- Switch-Konfiguration am Standort Wien Favoriten
+- Anpassungen an der Konfiguration vom Dorf-SW
