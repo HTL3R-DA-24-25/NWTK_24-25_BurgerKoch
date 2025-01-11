@@ -1,0 +1,141 @@
+! David Koch & Julian Burger 5CN
+! Little Big Topo
+! Fav-Access-1
+! ============================
+
+en
+conf t
+hostname Fav-Access-1
+no ip domain-lookup
+ip domain name 5CN
+banner motd *!!!KEEP OUT - Property of Koch & Burger!!!*
+service password-encryption
+username cisco priv 15
+username cisco algorithm-type scrypt secret cisco
+crypto key generate rsa usage-keys modulus 1024
+ip ssh version 2
+
+line vty 0 15
+login local
+logging synchronous
+exec-timeout 0 0
+transport input telnet ssh
+exit
+
+line con 0
+logging synchronous
+exec-timeout 0 0
+exit
+
+vtp domain 5CN
+vtp password 5CN
+vtp version 3
+vtp mode client
+
+sp mode rapid-pvst
+port-channel load-balance src-mac
+
+ip arp inspection vlan 10,20,21,30,31,42,100,150,200,201,666
+ip dhcp snooping vlan 10,20,21,30,31,42,100,150,200,201,666
+
+int range g0/0-3, g1/0-3, g2/0-3, g3/0-3
+desc UNUSED
+switchport nonegotiate
+switchport port-security mac-address sticky
+switchport port-security aging time 20
+switchport mode access
+switchport access vlan 666
+shut
+ex
+
+int range g0/0-1
+desc to_Fav_Core_1
+switchport trunk encap dot1q
+switchport mode trunk
+channel-group 1 mode active
+no shut
+ex
+
+int g1/0
+desc to_DC1
+switchport access vlan 200
+ip arp inspection trust
+no shut
+ex
+
+int g1/1
+desc to_DC2
+switchport access vlan 200
+ip arp inspection trust
+no shut
+ex
+
+int g1/2
+desc to_DC_Extern
+switchport access vlan 200
+ip arp inspection trust
+no shut
+ex
+
+int g1/3
+desc to_Jump_Server
+switchport access vlan 200
+ip arp inspection trust
+no shut
+ex
+
+int g2/0
+desc to_Fav_Core_2
+switchport trunk encap dot1q
+switchport mode trunk
+ip arp inspection trust
+ip dhcp inspection trust
+no shut
+ex
+
+int g2/3
+desc to_Offline_Root_CA
+switchport access vlan 201
+ip arp inspection trust
+no shut
+ex
+
+int g3/0
+desc to_Bastion
+switchport access vlan 150
+ip arp inspection trust
+no shut
+ex
+
+int g3/2
+desc to_Fav_File_Server
+switchport access vlan 100
+ip arp inspection trust
+no shut
+ex
+
+int g3/3
+desc to_VPN_Server
+switchport access vlan 100
+ip arp inspection trust
+no shut
+ex
+
+int port-channel1
+desc PO_to_Fav_Core_1
+switchport trunk encap dot1q
+switchport mode trunk
+switchport trunk allowed vlan 1,10,20,21,30,31,42,100,150,200,201
+ip arp inspection trust
+ip dhcp inspection trust
+no shut
+ex
+
+int vlan 30
+desc Management
+ip address 192.168.30.3 255.255.255.0
+no shut
+ex
+
+end
+wr
