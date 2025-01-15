@@ -180,8 +180,9 @@ config firewall shaping-policy
         set srcintf VLAN_10 VLAN_20
         set dstintf port1
         set internet-service enable
-        set internet-service name Google-Web
-        set application 16040  # YTs app ID
+        set internet-service-name Google-Web
+        # YTs app ID
+        set application 16040
         set traffic-shaper medium-priority
     next
 end

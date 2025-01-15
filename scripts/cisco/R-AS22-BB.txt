@@ -67,9 +67,9 @@ bgp confederation identifier 20
 bgp confederation peers 21
 neighbor 20.20.22.1 remote-as 22
 neighbor 20.20.22.1 update-source lo1
+neighbor 20.20.22.1 ebgp-multihop 2
 neighbor 20.20.21.2 remote-as 21
 neighbor 20.20.21.2 update-source lo1
-neighbor 20.20.21.2 ebgp-multihop 2
 ex
 
 end

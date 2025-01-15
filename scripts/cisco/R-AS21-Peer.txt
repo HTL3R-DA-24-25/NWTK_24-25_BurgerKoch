@@ -53,8 +53,9 @@ no shut
 ex
 
 int g0/2
-desc ???
-! TODO
+desc to_HA_SW_1
+ip address 103.152.126.254 255.255.255.0
+no shut
 ex
 
 int tunnel1
@@ -91,7 +92,9 @@ bgp log-neighbor-changes
 bgp confederation identifier 20
 bgp confederation peers 22
 network 103.152.127.0 mask 255.255.255.252
-! network ???
+network 103.152.126.0 mask 255.255.255.0
+neighbor 20.20.21.2 remote-as 21
+neighbor 20.20.21.2 update-source lo1
 neighbor 20.20.21.3 remote-as 21
 neighbor 20.20.21.3 update-source lo1
 ex

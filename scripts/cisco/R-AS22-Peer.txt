@@ -65,6 +65,8 @@ bgp log-neighbor-changes
 bgp confederation identifier 20
 bgp confederation peers 21
 network 45.84.107.0 mask 255.255.255.252
+neighbor 45.84.107.1 remote-as 666
+neighbor 45.84.107.1 update-source g0/0
 neighbor 20.20.22.2 remote-as 22
 neighbor 20.20.22.2 update-source lo1
 ex

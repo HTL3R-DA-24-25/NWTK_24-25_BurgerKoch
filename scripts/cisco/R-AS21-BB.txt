@@ -82,6 +82,7 @@ router-id 20.20.21.2
 network 172.16.20.0 0.0.0.3 area 1
 network 172.16.21.0 0.0.0.3 area 1
 network 172.16.21.4 0.0.0.3 area 1
+network 20.20.21.2 0.0.0.0 area 1
 ex
 
 router rip
@@ -95,10 +96,12 @@ router bgp 21
 bgp log-neighbor-changes
 bgp confederation identifier 20
 bgp confederation peers 22
+neighbor 20.20.21.1 remote-as 21
+neighbor 20.20.21.1 update-source lo1
 neighbor 20.20.21.3 remote-as 21
 neighbor 20.20.21.3 update-source lo1
 neighbor 20.20.22.2 remote-as 22
-neighbor 20.20.22.2 update-source lo1
+neighbor 20.20.22.2 update-source g0/0
 neighbor 20.20.22.2 ebgp-multihop 2
 ex
 
