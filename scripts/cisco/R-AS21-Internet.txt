@@ -36,7 +36,7 @@ ex
 key chain 2
 key 1
 key-string ganzgeheim123!
-cryptographic-algorithm dsa-2048
+cryptographic-algorithm hmac-sha-384
 ex
 
 int g0/0

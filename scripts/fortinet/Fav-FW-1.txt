@@ -1,16 +1,16 @@
 # admin/admin
 
 config system global
-    set hostname Dorf-FW
+    set hostname Fav-FW-1
     set admintimeout 30
     set timezone 26
 end
 
 config system interface
     edit port1
-        set desc "to_ISP_AS666"
+        set desc "HA-SW-1"
         set mode static
-        set ip 87.120.166.1 255.255.255.0
+        set ip 103.152.126.1 255.255.255.0
         set role wan
         set allowaccess ping
     next
@@ -25,7 +25,7 @@ config system interface
         set type vlan
         set vlanid 10
         set mode static
-        set ip 10.10.10.254 255.255.255.0
+        set ip 192.168.10.254 255.255.255.0
         set allowaccess ping
     next
     edit VLAN_20
@@ -35,7 +35,17 @@ config system interface
         set type vlan
         set vlanid 20
         set mode static
-        set ip 10.10.20.254 255.255.255.0
+        set ip 192.168.20.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_21
+        set desc "Windows Clients ISOLATED"
+        set vdom root
+        set interface port2
+        set type vlan
+        set vlanid 21
+        set mode static
+        set ip 192.168.21.254 255.255.255.0
         set allowaccess ping
     next
     edit VLAN_30
@@ -45,7 +55,7 @@ config system interface
         set type vlan
         set vlanid 30
         set mode static
-        set ip 10.10.30.254 255.255.255.0
+        set ip 192.168.30.254 255.255.255.0
         set allowaccess ping
     next
     edit VLAN_31
@@ -55,7 +65,7 @@ config system interface
         set type vlan
         set vlanid 31
         set mode static
-        set ip 10.10.31.254 255.255.255.0
+        set ip 192.168.31.254 255.255.255.0
         set allowaccess ping
     next
     edit VLAN_42
@@ -65,7 +75,7 @@ config system interface
         set type vlan
         set vlanid 42
         set mode static
-        set ip 10.10.42.254 255.255.255.0
+        set ip 192.168.42.254 255.255.255.0
         set allowaccess ping
     next
     edit VLAN_100
@@ -75,7 +85,37 @@ config system interface
         set type vlan
         set vlanid 100
         set mode static
-        set ip 10.10.100.254 255.255.255.0
+        set ip 192.168.100.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_150
+        set desc "Bastion"
+        set vdom root
+        set interface port2
+        set type vlan
+        set vlanid 150
+        set mode static
+        set ip 192.168.150.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_200
+        set desc "Windows Server"
+        set vdom root
+        set interface port2
+        set type vlan
+        set vlanid 200
+        set mode static
+        set ip 192.168.200.254 255.255.255.0
+        set allowaccess ping
+    next
+    edit VLAN_201
+        set desc "Offline Root CA"
+        set vdom root
+        set interface port2
+        set type vlan
+        set vlanid 201
+        set mode static
+        set ip 192.168.201.254 255.255.255.0
         set allowaccess ping
     next
 end
@@ -83,8 +123,15 @@ end
 config router static
     edit 1
         set dst 0.0.0.0 0.0.0.0
-        set gateway 87.120.166.254
+        set gateway 103.152.126.254
         set device port1
+        set distance 10
+    next
+    edit 2
+        set dst 0.0.0.0 0.0.0.0
+        set gateway 103.152.125.254
+        set device port1
+        set distance 20
     next
 end
 
@@ -141,15 +188,10 @@ config firewall shaper traffic-shaper
 end
 
 config firewall address
-    edit "Dorf-L-Workstations"
+    edit "Fav-W-Workstations"
         set type iprange
-        set start-ip 10.10.10.1
-        set end-ip 10.10.10.253
-    next
-    edit "Dorf-W-Workstations"
-        set type iprange
-        set start-ip 10.10.20.1
-        set end-ip 10.10.20.253
+        set start-ip 192.168.20.1
+        set end-ip 192.168.20.253
     next
     edit "IP-Phone-Langenzersdorf"
         set type ipmask
@@ -176,8 +218,8 @@ config firewall shaping-policy
         set name YT
         set status enable
         set ip-version 4
-        set srcaddr "Dorf-L-Workstations" "Dorf-W-Workstations"
-        set srcintf VLAN_10 VLAN_20
+        set srcaddr "Fav-W-Workstations"
+        set srcintf VLAN_20
         set dstintf port1
         set internet-service enable
         set internet-service name Google-Web
@@ -189,8 +231,8 @@ end
 # custom ip for nat traffic outside
 config firewall ippool
     edit "NAT_Public_IP_Pool"
-        set startip 87.120.166.69
-        set endip 87.120.166.69
+        set startip 103.152.126.69
+        set endip 103.152.126.69
         set type one-to-one
     next
 end
@@ -198,7 +240,7 @@ end
 config firewall policy
     edit 1
         set name "non-VPN-PAT-to-Outside"
-        set srcintf "port2" "VLAN_10" "VLAN_20" "VLAN_100"
+        set srcintf "port2" "VLAN_10" "VLAN_20" "VLAN_21" "VLAN_100" "VLAN_150" "VLAN_200" "VLAN_201"
         set dstintf "port1"
         set srcaddr "all"
           # WARNING: CHANGE THIS FOR VPN?
@@ -281,7 +323,7 @@ config webfilter urlfilter
                 set action block
             next
             edit 2
-                set url "www.htlrennweg.at"
+                set url "www.spengergasse.at"
                 set type simple
                 set action block
             next

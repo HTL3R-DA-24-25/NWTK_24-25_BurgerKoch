@@ -41,7 +41,7 @@ ex
 
 int g0/1
 desc to_Burger_FW
-ip address 31.6.14.0 255.255.255.0
+ip address 31.6.14.254 255.255.255.0
 no shut
 ex
 
@@ -77,10 +77,10 @@ router bgp 666
 bgp log-neighbor-changes
 network 45.84.107.0 mask 255.255.255.252
 network 31.6.14.0 mask 255.255.255.0
-neighbor 45.84.107.1 remote-as 20
-neighbor 45.84.107.1 update-source g0/0
-neighbor 6.6.6.1 remote-as 666
-neighbor 6.6.6.1 update-source lo1
+neighbor 45.84.107.2 remote-as 20
+neighbor 45.84.107.2 update-source g0/0
+neighbor 6.6.6.2 remote-as 666
+neighbor 6.6.6.2 update-source lo1
 neighbor 6.6.6.3 remote-as 666
 neighbor 6.6.6.3 update-source lo1
 ex
