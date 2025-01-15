@@ -57,7 +57,7 @@ ex
 router ospf 1
 router-id 6.6.6.2
 network 6.6.6.2 0.0.0.0 area 1
-network 10.66.6.0 0.0.0.3 area 1
+network 10.6.66.0 0.0.0.3 area 1
 ex
 
 router bgp 666

@@ -51,8 +51,8 @@ ex
 
 router ospf 1
 router-id 10.6.66.34
-network 10.66.6.32 0.0.0.3 area 1
-network 10.66.6.40 0.0.0.3 area 1
+network 10.6.66.32 0.0.0.3 area 1
+network 10.6.66.40 0.0.0.3 area 1
 ex
 
 end

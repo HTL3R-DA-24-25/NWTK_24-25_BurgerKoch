@@ -7,14 +7,14 @@ config system global
 end
 
 config system interface
-    edit port0
+    edit port1
         set desc "to_ISP_AS666"
         set mode static
         set ip 87.120.166.1 255.255.255.0
         set role wan
         set allowaccess ping
     next
-    edit port1
+    edit port2
         set role lan
         set allowaccess ping
     next
@@ -82,8 +82,9 @@ end
 
 config router static
     edit 1
-        set destination 0.0.0.0 0.0.0.0
+        set dst 0.0.0.0 0.0.0.0
         set gateway 87.120.166.254
+        set device port1
     next
 end
 
@@ -139,21 +140,47 @@ config firewall shaper traffic-shaper
     next
 end
 
+config firewall address
+    edit "Dorf-L-Workstations"
+        set type iprange
+        set start-ip 10.10.10.1
+        set end-ip 10.10.10.253
+    next
+    edit "Dorf-W-Workstations"
+        set type iprange
+        set start-ip 10.10.20.1
+        set end-ip 10.10.20.253
+    next
+    edit "IP-Phone-Langenzersdorf"
+        set type ipmask
+        set subnet 10.10.42.1/32
+    next
+    edit "IP-Phone-Favoriten"
+        set type ipmask
+        set subnet 192.168.42.1/32
+    next
+end
+
 config firewall shaping-policy
     edit 1
         set name VOIP
         set status enable
         set ip-version 4
-        set srcaddr 10.10.42.1
-        set dstaddr 192.168.42.1
+        set service FINGER H323
+        set srcaddr "IP-Phone-Langenzersdorf"
+        set dstaddr "IP-Phone-Favoriten"
+        # set dstintf AAAAAAA
         set traffic-shaper high-priority
     next
     edit 2
         set name YT
         set status enable
         set ip-version 4
-        set srcintf VLAN_10, VLAN_20
+        set srcaddr "Dorf-L-Workstations" "Dorf-W-Workstations"
+        set srcintf VLAN_10 VLAN_20
+        set dstintf port1
         set internet-service enable
+        set internet-service name Google-Web
         set application 16040  # YTs app ID
         set traffic-shaper medium-priority
     next
