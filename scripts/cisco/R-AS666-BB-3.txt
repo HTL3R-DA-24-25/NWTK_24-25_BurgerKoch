@@ -35,7 +35,7 @@ ex
 
 int g0/0
 desc to_SW_AS666_BB_2
-ip address 10.6.66.13 255.255.255.248
+ip address 10.6.66.105 255.255.255.248
 ip ospf authentication key-chain 1
 mpls ip
 no shut
@@ -52,7 +52,7 @@ ex
 router ospf 1
 router-id 10.6.66.10
 network 10.6.66.8 0.0.0.3 area 1
-network 10.6.66.12 0.0.0.7 area 1
+network 10.6.66.104 0.0.0.7 area 1
 ex
 
 end
