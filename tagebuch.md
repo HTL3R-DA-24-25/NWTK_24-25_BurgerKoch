@@ -124,3 +124,22 @@ Demnächst:
 ## Koch
 - Switch-Konfiguration am Standort Wien Favoriten
 - Anpassungen an der Konfiguration vom Dorf-SW
+
+# 18.01.2024
+
+## Burger
+Begonnen mit AD, aufgesetzt in einem "simulations" Netzwerk. Damit dies unabhängig von den
+ISPs getestet werden kann.
+- Erstellung der Simulations-Topology
+- Basic Config im AD sowie Simulations-Router
+
+# 19.01.2024
+
+## Burger
+Weiter gemacht im AD:
+- Child-Domain
+- RODC
+- IIS + SSL
+- CA
+- PKI
+- Autoenrollment
