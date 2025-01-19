@@ -89,7 +89,7 @@ desc to_Fav_Core_2
 switchport trunk encap dot1q
 switchport mode trunk
 ip arp inspection trust
-ip dhcp inspection trust
+ip dhcp snooping trust
 no shut
 ex
 
@@ -127,7 +127,7 @@ switchport trunk encap dot1q
 switchport mode trunk
 switchport trunk allowed vlan 1,10,20,21,30,31,42,100,150,200,201
 ip arp inspection trust
-ip dhcp inspection trust
+ip dhcp snooping trust
 no shut
 ex
 

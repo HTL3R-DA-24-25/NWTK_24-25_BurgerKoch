@@ -125,6 +125,16 @@ Demnächst:
 - Switch-Konfiguration am Standort Wien Favoriten
 - Anpassungen an der Konfiguration vom Dorf-SW
 
+# 15.01.2024
+
+## Koch
+- Aufsetzung Dokumentationsbuch (Typst DA-Vorlage wiederverwenden)
+- Adressierungsfehler in den Backbone-Skripts ausbessern
+- Dorf-FW Adressobjekte verwenden
+- Fav-FW-1 fertige Konfiguration bis auf VPN
+- Erster Versuch IPsec IKEv2 VPN Tunnel von Langenzersdorf nach Favoriten
+- BGP Confederation Troubleshooting
+
 # 18.01.2024
 
 ## Burger
@@ -143,3 +153,10 @@ Weiter gemacht im AD:
 - CA
 - PKI
 - Autoenrollment
+
+## Koch
+- FERTIGER IPsec IKEv2 Tunnel Langenzersdorf <---> Favoriten NACH 3 STUNDEN DEBUGGING WEGEN DEN ROUTER IMAGES(!!!!)
+- Private VLAN verschoben von Favoriten nach Langenzersdorf
+- IKEv2 RAS VPN auf Fav-FW-1/2 mit PSK für Praunstraße
+- DHCP-Server auf FortiGate statt DC für Favoriten und Langenzersdorf
+- Ausbesserung BGP-Konfiguration auf R-AS100-Peer-2 und im Confederation AS 20

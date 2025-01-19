@@ -123,7 +123,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 
 ### VLANs
 
-* 20: Windows Clients (+ Private VLANs)
+* 20: Windows Clients
 * 30: Switch Management
 * 31: Switch R-SPAN Mirroring
 * 42: VoIP-Geräte
@@ -207,7 +207,6 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * DC1 und DC2 nutzen Windows Server GUI, DC-Extern nutzt Core
   * Hosten die AD-Domäne corp.gartenbedarf.com
   * FSMO-Rollen: DC1 ist DNM und PDC, DC2 ist SM, RID Pool Manager und IM
-  * DC1 ist DHCP Server, DC2 dient als Failover --> Fav-W-Workstation-1 bekommt Static Lease
   * SSH-Server ist an und PowerShell-Remoting ist erlaubt
   * Schickt mittels Windows-Prometheus-Exporter Daten an den Grafana Server in Langenzersdorf
   * Dienen als NTP-Server
@@ -229,7 +228,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 ### VLANs
 
 * 10: Linux Clients
-* 20: Windows Clients
+* 20: Windows Clients  (+ Private VLANs)
 * 30: Switch Management
 * 31: Switch (R-SPAN) Mirroring
 * 42: VoIP-Geräte
@@ -249,8 +248,9 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * Docker-Host (10.10.100.10 & Docker-Container: 10.10.100.11, 10.10.100.12, 10.10.100.13, 10.10.100.14) 
 - 1x Linux-Client
   * Dorf-L-Workstation (DHCP)
-- 1x Windows-Client
-  * Dorf-W-Workstation (DHCP)
+- 2x Windows-Client
+  * Dorf-W-Workstation-1 (DHCP)
+  * Dorf-W-Workstation-2 (DHCP)
 
 ### Features
 
@@ -292,6 +292,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * WIP
 - Windows Workstations
   * Sind Teil der corp.gardenbedarf.com Domäne
+  * Sind in einem private VLAN (20 bzw. 21) und können sich nicht gegenseitig erreichen
 
 ## Kebapci
 
@@ -373,7 +374,6 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 |DC2|192.168.200.2|dc2.corp.gartenbedarf.com|SM, RIDPM, IM|Nein|
 |RODC|172.16.0.10|dc.extern.corp.gartenbedarf.com|-|Ja|
 
-* DC1 ist DHCP Server, DC2 dient als Failover --> Fav-W-Workstation-1 bekommt Static Lease
 * RODC ist Read-Only (duh)
 * SSH-Server ist an und PowerShell-Remoting ist erlaubt
 * Schicken mittels Windows-Prometheus-Exporter Daten an den Grafana Server in Langenzersdorf

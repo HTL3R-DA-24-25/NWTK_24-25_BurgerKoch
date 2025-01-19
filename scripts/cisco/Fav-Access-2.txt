@@ -27,35 +27,16 @@ logging synchronous
 exec-timeout 0 0
 exit
 
-vlan 20
-name Windows_Clients
-private-vlan primary
-private-vlan association 21
-ex
-vlan 21
-name Windows_Clients_ISOLATED
-private-vlan isolated
-ex
-vlan 30
-name Switch_Management
-ex
-vlan 31
-name Switch_Mirroring
-ex
-vlan 42
-name VoIP
-ex
-vlan 666
-name BLACKHOLE
-ex
-
-vtp mode transparent
+vtp domain 5CN
+vtp password 5CN
+vtp version 3
+vtp mode client
 
 sp mode rapid-pvst
 port-channel load-balance src-mac
 
-ip arp inspection vlan 10,20,21,30,31,42,666
-ip dhcp snooping vlan 10,20,21,30,31,42,666
+ip arp inspection vlan 10,20,21,30,31,42,100,150,200,201,666
+ip dhcp snooping vlan 10,20,21,30,31,42,100,150,200,201,666
 
 int range g0/0-3, g1/0-3, g2/0-3, g3/0-3
 desc UNUSED
@@ -80,22 +61,20 @@ desc to_Fav_Core_1
 switchport trunk encap dot1q
 switchport mode trunk
 ip arp inspection trust
-ip dhcp inspection trust
+ip dhcp snooping trust
 no shut
 ex
 
 int g3/0
 desc to_Fav_W_Workstation_1
-switchport mode private-vlan host
-switchport private-vlan host-association 20 21
+switchport access vlan 20
 ip arp inspection trust
 no shut
 ex
 
 int g3/1
 desc to_Fav_W_Workstation_2
-switchport mode private-vlan host
-switchport private-vlan host-association 20 21
+switchport access vlan 20
 ip arp inspection trust
 no shut
 ex
@@ -114,7 +93,7 @@ switchport trunk encap dot1q
 switchport mode trunk
 switchport trunk allowed vlan 1,10,20,21,30,31,42,100,150,200,201
 ip arp inspection trust
-ip dhcp inspection trust
+ip dhcp snooping trust
 no shut
 ex
 

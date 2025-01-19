@@ -61,11 +61,21 @@ no shut
 ex
 
 int tunnel1
-desc GRE_Tunnel_to_Route_Reflector_R_AS21_Internet
-ip address 172.16.0.2 255.255.255.252
+desc GRE_Tunnel_to_R_AS21_Internet
+ip address 172.16.0.1 255.255.255.252
 ip rip authentication key-chain 2
 tunnel source g0/2
 tunnel destination 172.16.21.5
+tunnel mode gre ip
+no shut
+ex
+
+int tunnel2
+desc GRE_Tunnel_to_R_AS21_Peer
+ip address 172.16.1.1 255.255.255.252
+ip rip authentication key-chain 2
+tunnel source g0/1
+tunnel destination 172.16.21.1
 tunnel mode gre ip
 no shut
 ex
@@ -90,6 +100,7 @@ version 2
 no auto-summary
 network 20.20.21.2
 network 172.16.0.0
+network 172.16.1.0
 ex
 
 router bgp 21
@@ -98,10 +109,12 @@ bgp confederation identifier 20
 bgp confederation peers 22
 neighbor 20.20.21.1 remote-as 21
 neighbor 20.20.21.1 update-source lo1
+neighbor 20.20.21.1 route-reflector-client
 neighbor 20.20.21.3 remote-as 21
 neighbor 20.20.21.3 update-source lo1
+neighbor 20.20.21.3 route-reflector-client
 neighbor 20.20.22.2 remote-as 22
-neighbor 20.20.22.2 update-source g0/0
+neighbor 20.20.22.2 update-source lo1
 neighbor 20.20.22.2 ebgp-multihop 2
 ex
 

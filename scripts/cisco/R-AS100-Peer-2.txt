@@ -40,14 +40,14 @@ no shut
 ex
 
 int g0/2
-desc ???
+! desc AAAAAAA
 ! TODO
 ex
 
 router bgp 100
 bgp log-neighbor-changes
 network 103.152.127.0 mask 255.255.255.252
-! network ???
+! network AAAAAAAAA
 neighbor 192.168.100.1 remote-as 100
 neighbor 192.168.100.1 update-source g0/1
 neighbor 103.152.127.1 remote-as 20
