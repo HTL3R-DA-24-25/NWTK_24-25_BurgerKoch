@@ -14,7 +14,7 @@ Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
 Import-Module ADDSDeployment
 
 Install-ADDSForest -DomainName "corp.gartenbedarf.com" -DomainMode "WinThreshold" -ForestMode "WinThreshold" -InstallDNS -Force
- 
+
 # Passwörter eingeben
 # FIX THIS
 
@@ -33,8 +33,8 @@ Set-DhcpServerv4OptionValue -DnsDomain "corp.gartenbedarf.com" -DnsServer 172.16
 
 Add-Dhcpserverv4lease -IPAddress 192.168.0.5 -ScopeId 192.168.0.0 -ClientId "F0-DE-F1-7A-00-5E"
 
-netsh dhcp add securitygroups 
-Restart-Service dhcpserver 
+netsh dhcp add securitygroups
+Restart-Service dhcpserver
 
 $outer = "Tech", "Sales", "Marketing", "Management"
 $inner = "Accounts", "Ressources"
@@ -95,7 +95,7 @@ foreach ($user in $users) {
         -AccountPassword (ConvertTo-SecureString "ganzgeheim123!" -AsPlainText -Force) `
         -Enabled $true `
         -ChangePasswordAtLogon $false
-   
+
 
     if ($department) {
         Add-ADGroupMember -Identity $groupName -Members $username
@@ -108,7 +108,7 @@ foreach ($user in $users) {
 
 
 New-ADReplicationSite -Name "Wien Favoriten"
-New-ADReplicationSite -Name "Langenzersdorf" 
+New-ADReplicationSite -Name "Langenzersdorf"
 New-ADReplicationSite -Name "Kebapci"
 New-ADReplicationSubnet -Name "192.168.200.0/24" -Site "Wien Favoriten"
 New-ADReplicationSubnet -Name "10.10.20.0/24" -Site "Langenzersdorf"
@@ -134,10 +134,10 @@ $gpoNameBackground = "Set Desktop Background"
 
 $fileSharePath = "\\dc2\Shares"
 $homeDirectoryPath = "\\dc2\homedirs\%username%"
-$backgroundImagePath = "\\dc2\wallpapers\background.jpg" 
+$backgroundImagePath = "\\dc2\wallpapers\background.jpg"
 $fileShareDriveLetter = "F:"
 $fileShareLabel = "Share"
-$fileSharePersistent = 1 
+$fileSharePersistent = 1
 
 # 1. Set the home directory for any user to a file share
 
