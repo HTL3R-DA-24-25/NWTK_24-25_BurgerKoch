@@ -51,10 +51,8 @@ Besteht aus den Sub-AS’s 21 & 22, insgesamt 5 Router (2 in 21 und 3 in 22):
 Nutzt ein MPLS Overlay, OSPF Underlay
 
 BGP Features:
-* R-AS21-Internet dient als Route-Reflector
+* R-AS21-BB dient als Route-Reflector
 * R-AS21-Internet teilt seine Default Route ins Internet den anderen Peers mit
-* Pfadmanipulation für redundante Versorgung des Wien Favoriten Standortes (gemeinsam mit AS100)
-* Distribution Lists
 
 Adressbereiche:
 * 172.16.20.0/30
@@ -71,8 +69,7 @@ Besteht aus insgesamt nur 2 Routern:
 Braucht kein Overlay/Underlay, nur BGP weil 2 Router
 
 BGP Features:
-* Pfadmanipulation für redundante Versorgung des Wien Favoriten Standortes (gemeinsam mit AS20)
-* Distribution Lists
+* Distribution Lists (Traffic von Burger-FW wird auf allen Border-Routern blockiert)
 
 Addressbereiche:
 * 192.168.100.0/30
@@ -98,7 +95,8 @@ Besteht aus 12 Routern und 2 L2-Switches:
 Nutzt ein GRE & RIP Overlay, OSPF Underlay
 
 BGP Features:
-* Distribution Lists
+* Pfadmanipulation mittels Local Preference von 100 auf 300 -> Traffic für den Standort Favoriten innerhalb AS666 immer über R-AS666-Peer-2 an AS100 ausschicken statt AS20
+* Prefix-List die alle Bogon-Adressen enthält auf die eBGP-Neighbors inbound angewendet werden, um Bogons zu blockieren
 
 Adressbereiche:
 * 10.6.66.0/30

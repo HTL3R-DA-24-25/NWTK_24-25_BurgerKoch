@@ -60,11 +60,37 @@ network 6.6.6.2 0.0.0.0 area 1
 network 10.6.66.0 0.0.0.3 area 1
 ex
 
+access-list 1 permit 103.152.126.0 255.255.255.0
+route-map BGP_Localpref_to_FW_Fav
+match ip address 1
+set local-preference 300
+ex
+
+ip prefix-list BOGON-BLOCK deny 0.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 10.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 100.64.0.0/10
+ip prefix-list BOGON-BLOCK deny 127.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 169.254.0.0/16
+ip prefix-list BOGON-BLOCK deny 172.16.0.0/12
+ip prefix-list BOGON-BLOCK deny 192.0.2.0/24
+ip prefix-list BOGON-BLOCK deny 192.168.0.0/16
+ip prefix-list BOGON-BLOCK deny 198.18.0.0/15
+ip prefix-list BOGON-BLOCK deny 198.51.100.0/24
+ip prefix-list BOGON-BLOCK deny 203.0.113.0/24
+ip prefix-list BOGON-BLOCK deny 224.0.0.0/3
+ip prefix-list BOGON-BLOCK permit 0.0.0.0/0 le 32
+
+route-map BLOCK-BOGONS deny 10
+match ip address prefix-list BOGON-BLOCK
+route-map BLOCK-BOGONS permit 20
+
 router bgp 666
 bgp log-neighbor-changes
 network 154.30.31.0 mask 255.255.255.252
 neighbor 154.30.31.2 remote-as 100
 neighbor 154.30.31.2 update-source g0/0
+neighbor 154.30.31.2 route-map BGP_Localpref_to_FW_Fav in
+neighbor 154.30.31.2 route-map BLOCK-BOGONS in
 neighbor 6.6.6.1 remote-as 666
 neighbor 6.6.6.1 update-source lo1
 neighbor 6.6.6.3 remote-as 666

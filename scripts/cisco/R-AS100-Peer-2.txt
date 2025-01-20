@@ -44,14 +44,27 @@ int g0/2
 ! TODO
 ex
 
+int g0/3
+desc to_R_Flex_Edge_2
+ip address 13.52.124.254 255.255.255.0
+no shut
+ex
+
+ip access-list standard No_Transit_for_Burger
+deny 31.6.14.0 255.255.255.0
+permit any
+ex
+
 router bgp 100
 bgp log-neighbor-changes
 network 103.152.127.0 mask 255.255.255.252
+network 13.52.124.0 mask 255.255.255.0
 ! network AAAAAAAAA
 neighbor 192.168.100.1 remote-as 100
 neighbor 192.168.100.1 update-source g0/1
 neighbor 103.152.127.1 remote-as 20
 neighbor 103.152.127.1 update-source g0/0
+neighbor 103.152.127.1 distribute-list No_Transit_for_Burger in
 ex
 
 end
