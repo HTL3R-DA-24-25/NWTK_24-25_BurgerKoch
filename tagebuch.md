@@ -114,18 +114,18 @@ Demnächst:
 - Braindump ergänzt & Fehler ausgebessert
 - WIP Skripts für DCs erstellt
 
-# 10.01.2024
+# 10.01.2025
 
 ## Burger
 - Switch configuration am Standort Praunstraße
 
-# 11.01.2024
+# 11.01.2025
 
 ## Koch
 - Switch-Konfiguration am Standort Wien Favoriten
 - Anpassungen an der Konfiguration vom Dorf-SW
 
-# 15.01.2024
+# 15.01.2025
 
 ## Koch
 - Aufsetzung Dokumentationsbuch (Typst DA-Vorlage wiederverwenden)
@@ -135,7 +135,7 @@ Demnächst:
 - Erster Versuch IPsec IKEv2 VPN Tunnel von Langenzersdorf nach Favoriten
 - BGP Confederation Troubleshooting
 
-# 18.01.2024
+# 18.01.2025
 
 ## Burger
 Begonnen mit AD, aufgesetzt in einem "simulations" Netzwerk. Damit dies unabhängig von den
@@ -143,7 +143,7 @@ ISPs getestet werden kann.
 - Erstellung der Simulations-Topology
 - Basic Config im AD sowie Simulations-Router
 
-# 19.01.2024
+# 19.01.2025
 
 ## Burger
 Weiter gemacht im AD:
@@ -161,7 +161,7 @@ Weiter gemacht im AD:
 - DHCP-Server auf FortiGate statt DC für Favoriten und Langenzersdorf
 - Ausbesserung BGP-Konfiguration auf R-AS100-Peer-2 und im Confederation AS 20
 
-# 20.01.2024
+# 20.01.2025
 
 ## Koch
 - SPAN Mirroring in Langenzersdorf implementiert (T-Shark auf Dorf-File-Server nicht vergessen!)
