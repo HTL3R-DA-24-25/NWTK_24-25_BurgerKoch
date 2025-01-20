@@ -160,3 +160,13 @@ Weiter gemacht im AD:
 - IKEv2 RAS VPN auf Fav-FW-1/2 mit PSK für Praunstraße
 - DHCP-Server auf FortiGate statt DC für Favoriten und Langenzersdorf
 - Ausbesserung BGP-Konfiguration auf R-AS100-Peer-2 und im Confederation AS 20
+
+# 20.01.2024
+
+## Koch
+- SPAN Mirroring in Langenzersdorf implementiert (T-Shark auf Dorf-File-Server nicht vergessen!)
+- BGP Features:
+    * Local Preference erhöht auf 300 für AS100 von AS666
+    * In AS666 Prefix-Lists für Bogon Blocking
+    * In AS100 Distribution-Lists für Blocking von Traffic, der aus Praunstraße kommt
+- FlexVPN Geräte in Topologie eingebunden und FlexVPN mit PSK konfiguriert
