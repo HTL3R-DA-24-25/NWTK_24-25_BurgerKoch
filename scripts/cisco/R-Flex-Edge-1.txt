@@ -42,7 +42,7 @@ ex
 crypto ikev2 keyring mykeys
 peer R-Flex-Edge-2
 address 13.52.124.1
-pre-shared-key IchMussFlexen?!
+pre-shared-key IchMussFlexen!
 ex
 
 crypto ikev2 profile default
@@ -65,6 +65,12 @@ tunnel protection ipsec profile default
 ex
 
 ip route 0.0.0.0 0.0.0.0 78.12.166.254
+
+router eigrp 100
+no auto-summary
+network 10.20.0.0 0.0.0.255
+network 10.20.69.0 0.0.0.255
+ex
 
 end
 wr

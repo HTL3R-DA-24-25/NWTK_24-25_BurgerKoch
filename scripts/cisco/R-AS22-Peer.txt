@@ -36,7 +36,6 @@ ex
 int g0/0
 desc to_R_AS666_Peer_1
 ip address 45.84.107.2 255.255.255.252
-ip ospf authentication key-chain 1
 no shut
 ex
 
