@@ -31,3 +31,10 @@ New-ADReplicationSiteLink -Name "Langenzersdorf-To-Kebapci" `
     -ReplicationFrequencyinMinutes 20
 
 Move-ADDirectoryServer -Identity "DC1" -Site "Favoriten"
+
+New-NetFirewallRule -DisplayName "WinRM HTTPS" `
+    -Direction Inbound `
+    -LocalPort 5985 `
+    -Protocol TCP `
+    -Action Allow `
+    -RemoteAddress "192.168.210.1"

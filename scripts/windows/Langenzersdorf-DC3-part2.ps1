@@ -5,12 +5,10 @@ $SecureStringPassword = (ConvertTo-SecureString "Ganzgeheim123!" -AsPlainText -F
 $DomainAdministratorCredentials = New-Object -TypeName System.Management.Automation.PSCredential `
     -ArgumentList ("Administrator@corp.gartenbedarf.com", $SecureStringPassword)
 
-Install-ADDSDomainController -DomainName "extern.corp.gartenbedarf.com" `
+Install-ADDSDomainController -DomainName "corp.gartenbedarf.com" `
     -SafeModeAdministratorPassword $SecureStringPassword `
     -Credential $DomainAdministratorCredentials `
-    -SiteName "Kebapci" `
-    -ReadOnlyReplica `
-    -ReplicationSourceDC "ExternDC.extern.corp.gartenbedarf.com" `
+    -SiteName "Langenzersdorf" `
     -InstallDNS
 
 New-NetFirewallRule -DisplayName "WinRM HTTPS" `

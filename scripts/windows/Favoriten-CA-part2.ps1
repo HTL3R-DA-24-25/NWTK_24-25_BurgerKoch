@@ -49,4 +49,11 @@ Certutil -setreg CA\CRLPublicationURLs "65:C:\Windows\system32\CertSrv\CertEnrol
 Copy-Item -Path 'C:\Windows\System32\CertSrv\CertEnroll\CA.corp.gartenbedarf.com_Gartenbedarf Root CA.crt' `
     -Destination '\\WEB.corp.gartenbedarf.com\C$\CertEnroll'
 
+New-NetFirewallRule -DisplayName "WinRM HTTPS" `
+    -Direction Inbound `
+    -LocalPort 5985 `
+    -Protocol TCP `
+    -Action Allow `
+    -RemoteAddress "192.168.210.1"
+
 Restart-Computer
