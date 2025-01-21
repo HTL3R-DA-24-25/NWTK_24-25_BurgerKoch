@@ -69,7 +69,8 @@ neighbor 103.152.127.1 update-source g0/0
 neighbor 103.152.127.1 distribute-list No_Transit_for_Burger in
 ex
 
-ip route 125.152.103.1 255.255.255.255 103.152.125.1
+ip route 125.152.103.1 255.255.255.255 103.152.127.1 100
+ip route 125.152.103.1 255.255.255.255 103.152.125.1 150
 
 end
 wr
