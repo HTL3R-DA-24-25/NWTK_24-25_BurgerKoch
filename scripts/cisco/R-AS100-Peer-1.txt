@@ -46,7 +46,7 @@ no shut
 ex
 
 ip access-list standard No_Transit_for_Burger
-deny 31.6.14.0 255.255.255.0
+deny 31.6.14.0 0.0.0.255
 permit any
 ex
 

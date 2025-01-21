@@ -202,11 +202,11 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * NICHT Teil der AD-Domäne
   * Ist abgekapselt von den restlichen Netzwerken, wird nur zur Erneuerung der Zertifikate wieder kurz dazugeschalten
 - DCs
-  * DC1 und DC2 nutzen Windows Server GUI, DC-Extern nutzt Core
+  * DC1 und DC2 nutzen beide Windows Server Core
   * Hosten die AD-Domäne corp.gartenbedarf.com
   * FSMO-Rollen: DC1 ist DNM und PDC, DC2 ist SM, RID Pool Manager und IM
   * SSH-Server ist an und PowerShell-Remoting ist erlaubt
-  * Schickt mittels Windows-Prometheus-Exporter Daten an den Grafana Server in Langenzersdorf
+  * Schicken mittels Windows-Prometheus-Exporter Daten an den Grafana Server in Langenzersdorf
   * Dienen als NTP-Server
   * *für weitere AD-Details siehe unten "Active Directory"*
 - Jump-Server
@@ -286,6 +286,9 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
     * DNS Caching Forwarder (bind9) (.12)
     * Grafana (.13)
     * Prometheus (.14)
+- DCs
+  * DC3 und DC-Extern nutzen beide Windows Server Core
+  * Hosten die AD-Domäne corp.gartenbedarf.com bzw. extern.corp.gartenbedarf.com
 - Linux Workstations
   * WIP
 - Windows Workstations
@@ -353,6 +356,24 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 - Linux Client
   * RAS WireGuard VPN-Tunnel zu Wien-Favoriten
 
+## Flex
+
+10.20.0.0/24 bzw. 10.20.1.0/24
+
+### Geräte
+
+- 2x Cisco-Router (VPN Gateway)
+  * R-Flex-Edge-1 (10.20.0.254 bzw. 78.12.166.1)
+  * R-Flex-Edge-2 (10.20.1.254 bzw. 13.52.124.1)
+- 2x VPCS (Ping Gurken)
+  * Flex-Client-1 (10.20.0.1)
+  * Flex-Client-2 (10.20.1.1)
+
+### Features
+
+- Router
+  * Haben einen FlexVPN-Tunnel zueinander (nutzt PSK)
+
 # Active Directory
 
 Root-Domain: corp.gartenbedarf.com
@@ -370,6 +391,8 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 |---|---|---|---|---|
 |DC1|192.168.200.1|dc1.corp.gartenbedarf.com|DNM, PDC|Nein|
 |DC2|192.168.200.2|dc2.corp.gartenbedarf.com|SM, RIDPM, IM|Nein|
+|DC-Extern|10.10.200.1|dc.extern.corp.gartenbedarf.com|-|Nein|
+|DC3|10.10.200.3|dc3.corp.gartenbedarf.com|-|Nein|
 |RODC|172.16.0.10|dc.extern.corp.gartenbedarf.com|-|Ja|
 
 * RODC ist Read-Only (duh)
@@ -381,16 +404,18 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 
 |Bezeichnung|IP-Adresse|FQDN|
 |---|---|---|
-|DC1|192.168.200.10|jump.corp.gartenbedarf.com|
+|Jump-Server|192.168.200.10|jump.corp.gartenbedarf.com|
 
-* Kann per RDP und SSH auf die DCs zugreifen
+* Kann per RDP und SSH auf die DCs zugreifen (wird von FW mittels Policies geregelt!)
 
 ### Workstations
 
 |Bezeichnung|IP-Adresse|FQDN|PAW|
 |---|---|---|---|
-|Fav-W-Workstation-1|DHCP, Static Lease 192.168.20.10|work1.corp.gartenbedarf.com|Ja|
-|Fav-W-Workstation-2|DHCP|work2.corp.gartenbedarf.com|Nein|
+|Fav-W-Workstation-1|DHCP, Static Lease 192.168.20.10|favwork1.corp.gartenbedarf.com|Ja|
+|Fav-W-Workstation-2|DHCP|favwork2.corp.gartenbedarf.com|Nein|
+|Dorf-W-Workstation-1|DHCP|dorfwork1.corp.gartenbedarf.com|Nein|
+|Dorf-W-Workstation-2|DHCP|dorfwork2.corp.gartenbedarf.com|Nein|
 
 * Die Fav-W-Workstation-1 ist eine Priviliged Access Workstation (PAW), und kann u.a. deswegen folgende besondere Sachen:
   * Auf den Jump-Server per RDP und SSH zugreifen
@@ -404,6 +429,11 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 ## PKI
 
 1-Tier PKI
+
+CA(s?):
+|Bezeichnung|IP-Adresse|FQDN|
+|---|---|---|
+|CA|192.168.200.10|ca.corp.gartenbedarf.com|
 
 Autoenrollment der Zertifikate per GPO für:
 * Clients

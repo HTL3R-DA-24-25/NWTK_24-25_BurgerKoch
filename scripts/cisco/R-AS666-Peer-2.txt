@@ -60,7 +60,7 @@ network 6.6.6.2 0.0.0.0 area 1
 network 10.6.66.0 0.0.0.3 area 1
 ex
 
-access-list 1 permit 103.152.126.0 255.255.255.0
+access-list 1 permit 103.152.126.0 0.0.0.255
 route-map BGP_Localpref_to_FW_Fav
 match ip address 1
 set local-preference 300
