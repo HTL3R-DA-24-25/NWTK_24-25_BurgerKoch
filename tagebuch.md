@@ -170,3 +170,8 @@ Weiter gemacht im AD:
     * In AS666 Prefix-Lists für Bogon Blocking
     * In AS100 Distribution-Lists für Blocking von Traffic, der aus Praunstraße kommt
 - FlexVPN Geräte in Topologie eingebunden und FlexVPN mit PSK konfiguriert
+
+## Burger
+- Weiterer DC in Langenzersdorf für DFS
+- Jump Server
+- "Outbound" WinRM für Jump Server
