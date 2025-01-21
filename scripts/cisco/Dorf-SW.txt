@@ -1,11 +1,11 @@
 ! David Koch & Julian Burger 5CN
 ! Little Big Topo
-! Dorf-FW
+! Dorf-SW
 ! ============================
 
 en
 conf t
-hostname Dorf-FW
+hostname Dorf-SW
 no ip domain-lookup
 ip domain name 5CN
 banner motd *!!!KEEP OUT - Property of Koch & Burger!!!*
@@ -27,11 +27,19 @@ logging synchronous
 exec-timeout 0 0
 exit
 
+!vtp mode transparent
+
 vlan 10
 name Linux_Clients
 ex
 vlan 20
 name Windows_Clients
+!private-vlan primary
+!private-vlan association 21
+!ex
+!vlan 21
+!name Windows_Clients_ISOLATED
+!private-vlan isolated
 ex
 vlan 30
 name Switch_Management
@@ -49,8 +57,11 @@ vlan 666
 name BLACKHOLE
 ex
 
+!ip arp inspection vlan 10,20,21
 ip arp inspection vlan 10,20
+!ip dhcp snooping vlan 10,20,21
 ip dhcp snooping vlan 10,20
+!no spanning-tree vlan 1,10,20,21,30,31,42,100,666
 no spanning-tree vlan 1,10,20,30,31,42,100,666
 
 int range g0/0-3, g1/0-3, g2/0-3, g3/0-3
@@ -67,7 +78,9 @@ int g0/0
 desc to_Dorf_FW
 switchport trunk encap dot1q
 switchport mode trunk
+!switchport trunk allowed vlan 1,10,20,21,30,31,42,100
 switchport trunk allowed vlan 1,10,20,30,31,42,100
+ip arp inspection trust
 ip dhcp snooping trust
 no shut
 ex
@@ -81,7 +94,19 @@ no shut
 ex
 
 int g1/1
-desc to_Dorf_W_Workstation
+desc to_Dorf_W_Workstation_1
+!switchport mode private-vlan host
+!switchport private-vlan host-association 20 21
+switchport mode access
+switchport access vlan 20
+ip arp inspection trust
+no shut
+ex
+
+int g1/2
+desc to_Dorf_W_Workstation_2
+!switchport mode private-vlan host
+!switchport private-vlan host-association 20 21
 switchport mode access
 switchport access vlan 20
 ip arp inspection trust
@@ -92,6 +117,14 @@ int range g3/0-1
 desc to_Dorf_Ubuntu_Servers
 switchport mode access
 switchport access vlan 100
+ip arp inspection trust
+no shut
+ex
+
+int range g3/2
+desc to_Fav_File_Server_MIRROR
+switchport mode access
+switchport access vlan 31
 ip arp inspection trust
 no shut
 ex
@@ -110,6 +143,9 @@ desc Management
 ip address 10.10.30.1 255.255.255.0
 no shut
 ex
+
+monitor session 1 source vlan 10,20,30,42,100 both
+monitor session 1 destination interface g3/2
 
 end
 wr

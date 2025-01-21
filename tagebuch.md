@@ -114,18 +114,28 @@ Demnächst:
 - Braindump ergänzt & Fehler ausgebessert
 - WIP Skripts für DCs erstellt
 
-# 10.01.2024
+# 10.01.2025
 
 ## Burger
 - Switch configuration am Standort Praunstraße
 
-# 11.01.2024
+# 11.01.2025
 
 ## Koch
 - Switch-Konfiguration am Standort Wien Favoriten
 - Anpassungen an der Konfiguration vom Dorf-SW
 
-# 18.01.2024
+# 15.01.2025
+
+## Koch
+- Aufsetzung Dokumentationsbuch (Typst DA-Vorlage wiederverwenden)
+- Adressierungsfehler in den Backbone-Skripts ausbessern
+- Dorf-FW Adressobjekte verwenden
+- Fav-FW-1 fertige Konfiguration bis auf VPN
+- Erster Versuch IPsec IKEv2 VPN Tunnel von Langenzersdorf nach Favoriten
+- BGP Confederation Troubleshooting
+
+# 18.01.2025
 
 ## Burger
 Begonnen mit AD, aufgesetzt in einem "simulations" Netzwerk. Damit dies unabhängig von den
@@ -133,7 +143,7 @@ ISPs getestet werden kann.
 - Erstellung der Simulations-Topology
 - Basic Config im AD sowie Simulations-Router
 
-# 19.01.2024
+# 19.01.2025
 
 ## Burger
 Weiter gemacht im AD:
@@ -143,3 +153,20 @@ Weiter gemacht im AD:
 - CA
 - PKI
 - Autoenrollment
+
+## Koch
+- FERTIGER IPsec IKEv2 Tunnel Langenzersdorf <---> Favoriten NACH 3 STUNDEN DEBUGGING WEGEN DEN ROUTER IMAGES(!!!!)
+- Private VLAN verschoben von Favoriten nach Langenzersdorf
+- IKEv2 RAS VPN auf Fav-FW-1/2 mit PSK für Praunstraße
+- DHCP-Server auf FortiGate statt DC für Favoriten und Langenzersdorf
+- Ausbesserung BGP-Konfiguration auf R-AS100-Peer-2 und im Confederation AS 20
+
+# 20.01.2025
+
+## Koch
+- SPAN Mirroring in Langenzersdorf implementiert (T-Shark auf Dorf-File-Server nicht vergessen!)
+- BGP Features:
+    * Local Preference erhöht auf 300 für AS100 von AS666
+    * In AS666 Prefix-Lists für Bogon Blocking
+    * In AS100 Distribution-Lists für Blocking von Traffic, der aus Praunstraße kommt
+- FlexVPN Geräte in Topologie eingebunden und FlexVPN mit PSK konfiguriert

@@ -55,6 +55,12 @@ mpls ip
 no shut
 ex
 
+int g0/3
+desc to_R_Flex_Edge_1
+ip address 78.12.166.254 255.255.255.0
+no shut
+ex
+
 int lo1
 description Loopback_for_BGP
 ip address 6.6.6.3 255.255.255.255
@@ -72,6 +78,7 @@ ex
 router bgp 666
 bgp log-neighbor-changes
 network 87.120.166.0 mask 255.255.255.0
+network 78.12.166.0 mask 255.255.255.0
 neighbor 6.6.6.1 remote-as 666
 neighbor 6.6.6.1 update-source lo1
 neighbor 6.6.6.2 remote-as 666

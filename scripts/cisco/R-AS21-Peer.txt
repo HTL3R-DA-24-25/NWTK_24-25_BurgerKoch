@@ -59,11 +59,11 @@ no shut
 ex
 
 int tunnel1
-desc GRE_Tunnel_to_Route_Reflector_R_AS21_Internet
+desc GRE_Tunnel_to_Route_Reflector_R_AS21_BB
 ip address 172.16.1.2 255.255.255.252
 ip rip authentication key-chain 2
 tunnel source g0/1
-tunnel destination 172.16.21.5
+tunnel destination 172.16.21.2
 tunnel mode gre ip
 no shut
 ex
@@ -95,8 +95,8 @@ network 103.152.127.0 mask 255.255.255.252
 network 103.152.126.0 mask 255.255.255.0
 neighbor 20.20.21.2 remote-as 21
 neighbor 20.20.21.2 update-source lo1
-neighbor 20.20.21.3 remote-as 21
-neighbor 20.20.21.3 update-source lo1
+neighbor 103.152.127.2 remote-as 100
+neighbor 103.152.127.2 update-source g0/0
 ex
 
 end

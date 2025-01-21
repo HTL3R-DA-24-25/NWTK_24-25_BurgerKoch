@@ -45,6 +45,11 @@ ip address 31.25.11.254 255.255.255.0
 no shut
 ex
 
+ip access-list standard No_Transit_for_Burger
+deny 31.6.14.0 255.255.255.0
+permit any
+ex
+
 router bgp 100
 bgp log-neighbor-changes
 network 31.25.11.0 mask 255.255.255.0
@@ -53,6 +58,7 @@ neighbor 192.168.100.2 remote-as 100
 neighbor 192.168.100.2 update-source g0/1
 neighbor 154.30.31.1 remote-as 666
 neighbor 154.30.31.1 update-source g0/0
+neighbor 154.30.31.1 distribute-list No_Transit_for_Burger in
 ex
 
 end
