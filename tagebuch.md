@@ -175,3 +175,23 @@ Weiter gemacht im AD:
 - Weiterer DC in Langenzersdorf für DFS
 - Jump Server
 - "Outbound" WinRM für Jump Server
+
+# 21.01.2025
+
+## Koch
+- Aktualisierte Topologie (v5) mit:
+    * richtigem HA Cluster Konzept
+    * eingezeichneten FlexVPN-Geräten
+    * Jump-Server, DC-Extern, CA am richtigen Platz (inkl VLAN 201 wird zu 210 und ist für den Jump-Server, nicht CA)
+    * Hinzugefügter DC3 und Web-Server in Favoriten
+- Ausbesserung Subnetzmasken bei ACLs (Wildcard...)
+- Fehler bei eBGP-Link zwischen AS666 und AS20/22 ausgebessert
+- Fertiges HA-Cluster in Favoriten + Loopback für VPN
+- Funktionierender site2site VPN von Langenzersdorf nach Favoriten nun auch mit HA
+- SPAN VLAN Konfiguration verbessert
+- Fehler mit "vci-match" in DHCP-Konfiguration ausgebessert
+- Erste Probekonfig Kebapci site2site VPN
+- Einbindung der AD-Gerätschaft von Kollege Burger über einen Remote-Server und Cloud-Links mit VMnets
+- Weitere Policies für Inter-VLAN-Routing in Favoriten:
+    * Windows Server <--> Windows Clients
+    * Windows Server <--> Jump-Server

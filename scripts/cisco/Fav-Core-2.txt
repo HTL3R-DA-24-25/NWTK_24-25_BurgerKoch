@@ -33,11 +33,11 @@ vtp version 3
 vtp mode client
 
 sp mode rapid-pvst
-sp vlan 10,20,21,30,31,42,100,150,200,201,666 priority 8192
+sp vlan 10,20,21,30,31,42,100,150,200,210,666 priority 8192
 port-channel load-balance src-mac
 
-ip arp inspection vlan 10,20,21,30,31,42,100,150,200,201,666
-ip dhcp snooping vlan 10,20,21,30,31,42,100,150,200,201,666
+ip arp inspection vlan 10,20,21,30,31,42,100,150,200,210,666
+ip dhcp snooping vlan 10,20,21,30,31,42,100,150,200,210,666
 
 int range g0/0-3, g1/0-3, g2/0-3, g3/0-3
 desc UNUSED
@@ -86,7 +86,7 @@ int port-channel2
 desc PO_to_Fav_Core_1
 switchport trunk encap dot1q
 switchport mode trunk
-switchport trunk allowed vlan 1,10,20,21,30,31,42,100,150,200,201
+switchport trunk allowed vlan 1,10,20,21,30,31,42,100,150,200,210
 ip arp inspection trust
 no shut
 ex
@@ -95,7 +95,7 @@ int port-channel3
 desc PO_to_Fav_Access_2
 switchport trunk encap dot1q
 switchport mode trunk
-switchport trunk allowed vlan 1,10,20,21,30,31,42,100,150,200,201
+switchport trunk allowed vlan 1,10,20,21,30,31,42,100,150,200,210
 ip arp inspection trust
 no shut
 ex
