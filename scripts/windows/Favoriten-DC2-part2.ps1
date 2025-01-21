@@ -10,3 +10,10 @@ Install-ADDSDomainController -DomainName "corp.gartenbedarf.com" `
     -Credential $DomainAdministratorCredentials `
     -SiteName "Favoriten" `
     -InstallDNS
+
+New-NetFirewallRule -DisplayName "WinRM HTTPS" `
+    -Direction Inbound `
+    -LocalPort 5985 `
+    -Protocol TCP `
+    -Action Allow `
+    -RemoteAddress "192.168.210.1"

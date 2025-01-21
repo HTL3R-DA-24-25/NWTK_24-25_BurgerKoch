@@ -43,7 +43,7 @@ ex
 
 int g0/3
 desc to_SW_AS666_BB_6
-ip address 10.6.66.28 255.255.255.252
+ip address 10.6.66.29 255.255.255.252
 ip ospf authentication key-chain 1
 mpls ip
 no shut
