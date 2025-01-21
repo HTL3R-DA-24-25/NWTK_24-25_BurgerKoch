@@ -53,7 +53,7 @@ no shut
 ex
 
 int g0/2
-desc to_HA_SW_1
+desc to_Fav_FW_1
 ip address 103.152.126.254 255.255.255.0
 no shut
 ex
@@ -93,11 +93,14 @@ bgp confederation identifier 20
 bgp confederation peers 22
 network 103.152.127.0 mask 255.255.255.252
 network 103.152.126.0 mask 255.255.255.0
+network 125.152.103.1 mask 255.255.255.255
 neighbor 20.20.21.2 remote-as 21
 neighbor 20.20.21.2 update-source lo1
 neighbor 103.152.127.2 remote-as 100
 neighbor 103.152.127.2 update-source g0/0
 ex
+
+ip route 125.152.103.1 255.255.255.255 103.152.126.1
 
 end
 wr
