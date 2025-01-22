@@ -195,3 +195,8 @@ Weiter gemacht im AD:
 - Weitere Policies für Inter-VLAN-Routing in Favoriten:
     * Windows Server <--> Windows Clients
     * Windows Server <--> Jump-Server
+
+## Burger
+- Probelauf von den Windows-Server auf Schul-Workstations
+- Anpassungen damit die Server wirklich tun wie sie sollen
+- Einbindung in die GNS3-Topologie
