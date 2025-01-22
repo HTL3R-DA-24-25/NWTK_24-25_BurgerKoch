@@ -7,6 +7,10 @@ Verkauft u.a. die Rasensprengerköpfe „Sprühkönig“ und „Sprengmeister“
 
 Die Mitarbeiter der Gartenbedarfs GmbH gehen gerne in ihren Mittagspausen u.a. zu Kebapci futtern, ABER die Gartenbedarfs GmbH ist heimlich mit Kebapci geschäftlich und infrastrukturtechnisch verwickelt, da Kepabci als Front für die Schwarzarbeit und Geldwäsche der Gartenbedarfs GmbH genutzt wird.
 
+# Topologie
+
+![Burger & Koch LBT-Topologie v6](./images/topology/lbt_v6.png)
+
 # Standorte
 
 ## Backbone
@@ -128,7 +132,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 * 100: Ubuntu Server (ohne Bastion)
 * 150: Bastion
 * 200: Windows Server
-* 201: Offline Root CA
+* 210: Jump Server
 * 666: Blackhole
 
 ### Geräte
@@ -148,11 +152,11 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * Fav-File-Server (192.168.100.10)
   * VPN-Server (192.168.100.20)
 - 5x Windows-Server
-  * DC1 (192.168.200.1) (GUI)
-  * DC2 (192.168.200.2) (GUI)
-  * DC-Extern (192.168.200.3) (Core)
-  * Jump-Server (192.168.200.10) (GUI)
-  * Offline-Root-CA (192.168.201.1) (GUI)
+  * DC1 (192.168.200.1) (Core)
+  * DC2 (192.168.200.2) (Core)
+  * CA (192.168.200.10) (Core)
+  * Web-Server (192.168.200.100) (GUI)
+  * Jump-Server (192.168.210.1) (GUI)
 - 2x Windows-Client
   * Fav-W-Workstation-1 (DHCP --> Static Lease für 192.168.20.10) (PAW)
   * Fav-W-Workstation-2 (DHCP)
@@ -161,10 +165,11 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 
 - FortiGates
   * HA-Cluster mit Fav-FW-1 & Fav-FW-2
+    * Port9 und Port10 dienen als Heartbeat-Links
+    * Loopback-Interface zum Erreichen der FWs als einzelnes Gerät für VPN GE Endpoint von Langenzersdorf aus
   * Traffic Shapping bzw QoS für VoIP/Video (Youtube)
   * SSL-Inspection
   * IPsec (IKEv2) VPN-Tunnel zu Dorf-FW mit PSK
-  * DMVPN (IKEv2) VPN-Tunnel zu Kebapci-FW
   * Remote Access - "RAS" SSL-VPN
   * Authentifizierter Internetzugang via captive portal (Network Policy Server)
   * Telemetry Client(?)
@@ -198,9 +203,9 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * Erhält R-SPAN Daten der Fav-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
 - VPN-Server
   * WireGuard VPN-Server
-- Offline-Root-CA
-  * NICHT Teil der AD-Domäne
-  * Ist abgekapselt von den restlichen Netzwerken, wird nur zur Erneuerung der Zertifikate wieder kurz dazugeschalten
+- CA
+  * Ist Teil der AD-Domäne
+  * Packt Zertfikate auf IIS-Server
 - DCs
   * DC1 und DC2 nutzen beide Windows Server Core
   * Hosten die AD-Domäne corp.gartenbedarf.com
@@ -208,13 +213,16 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * SSH-Server ist an und PowerShell-Remoting ist erlaubt
   * Schicken mittels Windows-Prometheus-Exporter Daten an den Grafana Server in Langenzersdorf
   * Dienen als NTP-Server
+  * Auto-enrollen die Zertifikate der CA auf Clients
   * *für weitere AD-Details siehe unten "Active Directory"*
 - Jump-Server
   * Nutzt Windows Server GUI
   * Von der PAW aus per RDP und PS/SSH erreichbar
   * Kann auf die DCs per PS/SSH
+- Web-Server
+  * Nutzt IIS um die Zertifikate der CA zu hosten
 - Windows Workstations
-  * Sind Teil der extern.corp.gardenbedarf.com Domäne
+  * Sind Teil der corp.gardenbedarf.com Domäne
   * W-Workstation-1 ist PAW (VIP-Zugriff auf FortiGate & Jump Server)
 
 ## Langenzersdorf
@@ -231,6 +239,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 * 31: Switch (R-SPAN) Mirroring
 * 42: VoIP-Geräte
 * 100: Ubuntu Server
+* 200: Windows Server
 * 666: Blackhole
 
 ### Geräte
@@ -243,7 +252,10 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * IP-Phone-Langenzersdorf (10.10.42.1)
 - 2x Ubuntu-Server
   * Dorf-File-Server (quasi Syslog?) (10.10.100.1)
-  * Docker-Host (10.10.100.10 & Docker-Container: 10.10.100.11, 10.10.100.12, 10.10.100.13, 10.10.100.14) 
+  * Docker-Host (10.10.100.10 & Docker-Container: 10.10.100.11, 10.10.100.12, 10.10.100.13, 10.10.100.14)
+- 2x Windows-Server
+  * DC-Extern (10.10.200.1) (Core)
+  * DC3 (10.10.200.3) (Core)
 - 1x Linux-Client
   * Dorf-L-Workstation (DHCP)
 - 2x Windows-Client
@@ -256,6 +268,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   * Traffic Shapping bzw QoS für VoIP/Video (Youtube)
   * SSL-Inspection
   * IPsec (IKEv2) VPN-Tunnel zu Fav-FW-1 & 2 mit PSK
+  * IPsec (IKEv2) VPN-Tunnel zu Kebapci-FW mit PSK
   * Remote Access - "RAS" SSL-VPN
   * Authentifizierter Internetzugang via captive portal (Network Policy Server)
   * Telemetry Client(?)
@@ -315,7 +328,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 ### Features
 
 - pfSense
-  * DMVPN VPN-Tunnel zu Fav-FW-1 & 2
+  * IPsec VPN-Tunnel zu Fav-FW-1 & 2 mit PSK
   * PAT nach außen für non-VPN-Traffic
   * Web-Server durch Port-Forwarding von außen erreichbar
 - Switch
@@ -325,6 +338,7 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
     * Blackhole VLAN auf unused Interfaces
 - Web-Server
   * Hostet mittels nginx eine Website
+  * Wird statisch nach außen geNATtet damit die Website übers "Internet" erreichbar ist
 - Windows Clients
   * Sind Teil der extern.corp.gardenbedarf.com Domäne
 - DC
@@ -393,7 +407,7 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 |DC2|192.168.200.2|dc2.corp.gartenbedarf.com|SM, RIDPM, IM|Nein|
 |DC-Extern|10.10.200.1|dc.extern.corp.gartenbedarf.com|-|Nein|
 |DC3|10.10.200.3|dc3.corp.gartenbedarf.com|-|Nein|
-|RODC|172.16.0.10|dc.extern.corp.gartenbedarf.com|-|Ja|
+|RODC|172.16.0.10|rodc.extern.corp.gartenbedarf.com|-|Ja|
 
 * RODC ist Read-Only (duh)
 * SSH-Server ist an und PowerShell-Remoting ist erlaubt
@@ -424,13 +438,16 @@ Root-DCs stehen beide in Wien Favoriten, RODC bei Kebapci
 
 ### AGDLP
 
+[Die AGDLP-Struktur im AD](./images/ad/lbt_agdlp_v1.png)
+
 ### OU-Struktur
+
+WIP
 
 ## PKI
 
 1-Tier PKI
 
-CA(s?):
 |Bezeichnung|IP-Adresse|FQDN|
 |---|---|---|
 |CA|192.168.200.10|ca.corp.gartenbedarf.com|
@@ -441,7 +458,7 @@ Autoenrollment der Zertifikate per GPO für:
 
 ### NPS
 
-Radius Server läuft als Service auf DC1
+Radius Server läuft als Service auf einem eigenen RADIUS-Server in Favoriten
 Integration mit (also man kann sich dort mit AD-User authentifizieren):
 * Switches innerhalb der Firmenstandorte
 * FortiGate Captive Portal
