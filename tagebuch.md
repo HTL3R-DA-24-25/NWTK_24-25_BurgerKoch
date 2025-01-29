@@ -200,3 +200,23 @@ Weiter gemacht im AD:
 - Probelauf von den Windows-Server auf Schul-Workstations
 - Anpassungen damit die Server wirklich tun wie sie sollen
 - Einbindung in die GNS3-Topologie
+
+# 22.01.2025
+
+ZWISCHENABGABE
+
+## Koch
+- Kebapci VPN läuft über Dorf, nicht Favoriten
+- Erster Versuch Routing zwischen P2-Interfaces auf der Dorf-FW
+
+## Burger
+
+# 29.01.2025
+
+## Koch
+- Aktualisierte Topologie (v6) mit:
+    * MPLS-Overlay-VPN "Armut Standorte" hinzugefügt
+    * NPS in Favoriten
+- VPN Routing von Favoriten bis Kebapci durch extra P2-Selektor
+- Fehlende Config in R-AS666-BB-7 ausgebessert
+- Dokumentationsvorlage aus Typst-DA-Vorlage erstellt mit ersten Kapiteln

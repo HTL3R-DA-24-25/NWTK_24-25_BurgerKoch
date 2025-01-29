@@ -463,6 +463,8 @@ Integration mit (also man kann sich dort mit AD-User authentifizieren):
 * Switches innerhalb der Firmenstandorte
 * FortiGate Captive Portal
 
+Shared Secret: cisco
+
 ### IPAM
 
 WIP
