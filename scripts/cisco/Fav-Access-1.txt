@@ -56,6 +56,13 @@ channel-group 1 mode active
 no shut
 ex
 
+int g0/3
+desc to_NPS
+switchport access vlan 200
+ip arp inspection trust
+no shut
+ex
+
 int g1/0
 desc to_DC1
 switchport access vlan 200
