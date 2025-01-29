@@ -104,6 +104,8 @@ neighbor 6.6.6.2 remote-as 666
 neighbor 6.6.6.2 update-source lo1
 neighbor 6.6.6.3 remote-as 666
 neighbor 6.6.6.3 update-source lo1
+neighbor 6.6.6.4 remote-as 666
+neighbor 6.6.6.4 update-source lo1
 ex
 
 end

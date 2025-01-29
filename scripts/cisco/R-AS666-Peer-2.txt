@@ -47,6 +47,18 @@ mpls ip
 no shut
 ex
 
+ip vrf Armut-Customer-1
+rd 42069:1
+route-target both 42069:1
+ex
+
+int g0/3
+desc to_Armut_Edge_1
+ip vrf forwarding Armut-Customer-1
+ip address 31.25.42.254 255.255.255.0
+no shut 
+ex
+
 int lo1
 description Loopback_for_BGP
 ip address 6.6.6.2 255.255.255.255
@@ -87,6 +99,7 @@ route-map BLOCK-BOGONS permit 20
 router bgp 666
 bgp log-neighbor-changes
 network 154.30.31.0 mask 255.255.255.252
+network 31.25.42.0 mask 255.255.255.0
 neighbor 154.30.31.2 remote-as 100
 neighbor 154.30.31.2 update-source g0/0
 neighbor 154.30.31.2 route-map BGP_Localpref_to_FW_Fav in
@@ -95,6 +108,17 @@ neighbor 6.6.6.1 remote-as 666
 neighbor 6.6.6.1 update-source lo1
 neighbor 6.6.6.3 remote-as 666
 neighbor 6.6.6.3 update-source lo1
+neighbor 6.6.6.4 remote-as 666
+neighbor 6.6.6.4 update-source lo1
+address-family vpnv4
+neighbor 6.6.6.4 activate
+ex
+address-family ipv4
+no neighbor 6.6.6.4 activate
+ex
+address-family ipv4 vrf Armut-Customer-1
+neighbor 31.25.42.1 remote-as 61
+ex
 ex
 
 end

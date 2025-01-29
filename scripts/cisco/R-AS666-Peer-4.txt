@@ -1,11 +1,11 @@
 ! David Koch & Julian Burger 5CN
 ! Little Big Topo
-! R-AS666-Peer-3
+! R-AS666-Peer-4
 ! ============================
 
 en
 conf t
-hostname R-AS666-Peer-3
+hostname R-AS666-Peer-4
 no ip domain-lookup
 ip domain name 5CN
 banner motd *!!!KEEP OUT - Property of Koch & Burger!!!*
@@ -34,57 +34,60 @@ cryptographic-algorithm hmac-sha-512
 ex
 
 int g0/0
-desc to_R_AS666_BB_4
-ip address 10.6.66.21 255.255.255.252
-ip ospf authentication key-chain 1
-mpls ip
+desc to_R_AS666_BB_7
+ip address 10.6.66.201 255.255.255.252
 no shut
 ex
 
-int g0/1
-desc to_Dorf_FW
-ip address 87.120.166.254 255.255.255.0
-no shut
-ex
-
-int g0/2
-desc to_R_AS666_BB_5
-ip address 10.6.66.25 255.255.255.252
-ip ospf authentication key-chain 1
-mpls ip
-no shut
+ip vrf Armut-Customer-2
+rd 42069:1
+route-target both 42069:1
 ex
 
 int g0/3
-desc to_R_Flex_Edge_1
-ip address 78.12.166.254 255.255.255.0
-no shut
+desc to_Armut_Edge_2
+ip vrf forwarding Armut-Customer-2
+ip address 31.6.28.254 255.255.255.0
+no shut 
 ex
 
 int lo1
 description Loopback_for_BGP
-ip address 6.6.6.3 255.255.255.255
+ip address 6.6.6.4 255.255.255.255
 ip ospf authentication key-chain 1
 no shut
 ex
 
 router ospf 1
-router-id 6.6.6.3
-network 6.6.6.3 0.0.0.0 area 1
-network 10.6.66.20 0.0.0.3 area 1
-network 10.6.66.24 0.0.0.3 area 1
+router-id 6.6.6.4
+network 6.6.6.4 0.0.0.0 area 1
+network 10.6.66.200 0.0.0.3 area 1
+ex
+
+access-list 1 permit 103.152.126.0 0.0.0.255
+route-map BGP_Localpref_to_FW_Fav
+match ip address 1
+set local-preference 300
 ex
 
 router bgp 666
 bgp log-neighbor-changes
-network 87.120.166.0 mask 255.255.255.0
-network 78.12.166.0 mask 255.255.255.0
+network 31.6.28.0 mask 255.255.255.0
 neighbor 6.6.6.1 remote-as 666
 neighbor 6.6.6.1 update-source lo1
 neighbor 6.6.6.2 remote-as 666
 neighbor 6.6.6.2 update-source lo1
-neighbor 6.6.6.4 remote-as 666
-neighbor 6.6.6.4 update-source lo1
+neighbor 6.6.6.3 remote-as 666
+neighbor 6.6.6.3 update-source lo1
+address-family vpnv4
+neighbor 6.6.6.2 activate
+ex
+address-family ipv4
+no neighbor 6.6.6.2 activate
+ex
+address-family ipv4 vrf Armut-Customer-2
+neighbor 31.6.28.1 remote-as 62
+ex
 ex
 
 end
