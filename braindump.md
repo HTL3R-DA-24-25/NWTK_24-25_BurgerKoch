@@ -9,7 +9,7 @@ Die Mitarbeiter der Gartenbedarfs GmbH gehen gerne in ihren Mittagspausen u.a. z
 
 # Topologie
 
-![Burger & Koch LBT-Topologie v6](./images/topology/lbt_v6.png)
+![Burger & Koch LBT-Topologie v7](./images/topology/lbt_v7.png)
 
 # Standorte
 
