@@ -33,4 +33,8 @@
 
 #include "text/backbone.typ"
 
+#include "text/firewalls.typ"
+
+#include "text/standorte.typ"
+
 #include "text/active_directory.typ"

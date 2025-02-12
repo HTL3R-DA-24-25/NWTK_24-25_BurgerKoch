@@ -1,285 +1,94 @@
-yaml:
+as:
   short:
-    singular: YAML
+    singular: AS
+    plural: ASen
   long:
-    singular: YAML Ain't Markup Language
-  description: Eine menschlichlesbare strukturierte Textdatei, welche Daten beinhaltet. Wird oft zur konfiguration eingesetzt.
+    singular: Autonomes System
+    plural: Autonome Systeme
+  description: TODO
 
-iac:
+ospf:
   short:
-    singular: IaC
+    singular: OSPF
   long:
-    singular: Infrastructure as Code
-  description: Die Abbildung der Physischen und Virtuellen Infrastruktur als Datenstruktur oder auch Code.
+    singular: Open Shortest Path First
+  description: Ein dynamisches Link-State Routingprotokoll
 
-dvs:
+rip:
   short:
-    singular: DVS
-    plural: DVSs
+    singular: RIP
   long:
-    singular: Distributed Virtual Switch
-  description: Ein virtueller Switch welcher in einer vSphere-Umgebung mehreren Hosts zugewiesen sein kann. Dies ermöglicht es VMs auf mehrere Hosts zu verteilen und sie dennoch in dasselbe Netzwerk zu hängen, dieser virtuelle Switch dient zur Verwaltung der Uplinks auf den jeweiligen Hosts.
+    singular: Routing Information Protocol
+  description: Ein dynamisches Distance-Vektor Routingprotokoll
 
-dpg:
+bgp:
   short:
-    singular: DPG
-    plural: DPGs
+    singular: BGP
   long:
-    singular: Distributed Port Group
-  description: Ein virtuelles Netzwerksegment welches einem DVS zugewiesen werden kann. Dieses Netzwerksegment wird den VMs, welche über mehrere Hosts verteilt sein können, zugewiesen um somit ein LAN über mehrere Hosts zu schaffen.
+    singular: Border Gateway Protocol
+  description: TODO
 
-dhcp:
+ip:
   short:
-    singular: DHCP
+    singular: IP
   long:
-    singular: Dynamic Host Configuration Protocol
-  description: Ein Protokoll welches oft benutzt wird, um dynamisch IP-Adressen über das Netzwerk zu verteilen.
+    singular: Internet Protocol
 
-uuid:
+bb:
   short:
-    singular: UUID
-    plural: UUIDs
+    singular: BB
   long:
-    singular: Universally Unique Identifier
-    plural: Universally Unique Identifiers
-  description: Eine Identifikationsnummer, welche global nur ein einziges Mal existiert.
+    singular: Backbone
 
-api:
+mpls:
   short:
-    singular: API
+    singular: MPLS
   long:
-    singular: Application Programing Interface
-  description: Eine Schnittstelle die eine Kommunikation zwischen Software ermöglicht.
+    singular: Multi-Protocol Label Switching
 
-vm:
+fw:
   short:
-    singular: VM
-    plural: VMs
+    singular: FW
+    plural: FWs
   long:
-    singular: Virtuelle Maschine
-    plural: Virtuelle Maschines
+    singular: Firewall
+    plural: Firewalls
+  description: Ein Netzwerkgerät das zur sicheren Trennung von Netzwerk dient. Wird meist zur Abgrenzung eines privaten Netzwerks zum Internet verwendet.
 
-it:
+sota:
   short:
-    singular: IT
+    singular: SOTA
   long:
-    singular: Informational Technology
+    singular: State of the Art
+  description: Der neuste Stand der Technik
 
-ot:
+pop:
   short:
-    singular: OT
+    singular: PoP
+    plural: PoPs
   long:
-    singular: Operational Technology
+    singular: Point of Presence
+    plural: Points of Presence
+  description: TODO
 
-lan:
+ha:
   short:
-    singular: LAN
-    plural: LANs
+    singular: HA
   long:
-    singular: Local Area Network
-    plural: Local Area Networks
+    singular: High Availabity
 
-vlan:
+vpcs:
   short:
-    singular: VLAN
-    plural: VLANs
+    singular: VPCS
+    plural: VPCSs
   long:
-    singular: Virtual Local Area Network
-    plural: Virtual Local Area Networks
+    singular: Virtual PC Simulator
+    plural: Virtual PC Simulators
+  description: Ein in GNS3 vorinstalliertes Gerät bzw. Programm, welches einen simplen Client-PC simuliert.
 
-ad:
+nat:
   short:
-    singular: AD
+    singular: NAT
   long:
-    singular: Active Directory
-
-addc:
-  short:
-    singular: ADDC
-    plural: ADDCs
-  long:
-    singular: Active Directory Domain Controller
-
-i2c:
-  short:
-    singular: I²C
-  long:
-    singular: Inter-Integrated Circuit
-  description: Ein Zweidraht-Datenbus mit Master-Slave-Konzept.
-
-io:
-  short:
-    singular: IO
-  long:
-    singular: Input/Output
-
-gau:
-  short:
-    singular: GAU
-  long:
-    singular: Größter Anzunehmender Unfall
-
-sps:
-  short:
-    singular: SPS
-    plural: SPSen
-  long:
-    singular: Speicherprogrammierbare Steuerung
-    plural: Speicherprogrammierbare Steuerungen
-
-crc:
-  short:
-    singular: CRC
-  long:
-    singular: Cyclic Redundancy Check
-
-psm:
-  short:
-    singular: PSM
-  long:
-    singular: Python Submodule (for OpenPLC)
-
-dmz:
-  short:
-    singular: DMZ
-  long:
-    singular: Demilitarisierte Zone
-  description: Ein eigenes Netzwerk für Dienste, die aus dem Internet zugänglich sind und vom internen Netz abgetrennt sind, um die Sicherheit zu erhöhen. Die Trennung der Netze erfolgt durch eine Firewall.
-
-scada:
-  short:
-    singular: SCADA
-  long:
-    singular: Supervisory Control and Data Acquisition
-
-uart:
-  short:
-    singular: UART
-  long:
-    singular: Universal Asynchronous Receiver Transmitter
-  description: ein Zweidraht-Protokoll für den Austausch von seriellen Daten zwischen zwei Geräten.
-
-ics:
-  short:
-    singular: ICS
-  long:
-    singular: Industrial Control System
-  description: Ein allgemeiner Begriff zur Beschreibung von Kontrollsystemen und den zugehörigen Geräten zur Prozesskontrolle.
-
-gui:
-  short:
-    singular: GUI
-  long:
-    singular: Graphical User Interface
-  description: Die grafische Benutzeroberfläche eines Computersystems.
-
-ids:
-  short:
-    singular: IDS
-    plural: IDSs
-  long:
-    singular: Intrusion Detection System
-    plural: Intrusion Detection Systems
-  description: Ein System, welches ein Netzwerk überwacht und Angriffe auf dieses erkennt.
-
-mes:
-  short:
-    singular: MES
-  long:
-    singular: Manufacturing Execution System
-
-vdom:
-  short:
-    singular: VDOM
-    plural: VDOMs
-  long:
-    singular: Virtual Domain
-  description: Dient zur Unterteilung einer FortiGate-Firewall in zwei oder mehrere virtuelle Einheiten welche unabhängig voneinander agieren.
-
-lmp:
-  short:
-    singular: LMP
-    plural: LMPs
-  long:
-    singular: Lateral Movement Path
-    plural: Lateral Movement Paths
-
-lotl:
-  short:
-    singular: LotL
-  long:
-    singular: Living off the Land
-
-ou:
-  short:
-    singular: OU
-    plural: OUs
-  long:
-    singular: Organizational Unit
-    plural: Organizational Units
-  description: Eine logische Gruppe innerhalb der hierarchischen Struktur einer Active-Directory-Umgebung. In ihr werden Benutzer, Computer, etc. aufbewahrt.
-
-ams:
-  short:
-    singular: AMS
-  long:
-    singular: Automatic Material System
-
-rfid:
-  short:
-    singular: RFID
-  long:
-    singular: Radio-Frequency Identification
-  description: Daten werden mittels elektromagnetischer Wellen berührungslos und automatisiert ausgelesen sowie gespeichert.
-
-pla:
-  short:
-    singular: PLA
-  long:
-    singular: Polylactid
-  description: Ein synthetisches Polymer, welches oft in 3D-Druck-Filament zu finden ist.
-
-petg:
-  short:
-    singular: PETG
-  long:
-    singular: Polyethylenterephthalat + Glykol
-  description: Ein mit Glykol modifiziertes synthetisches Polymer, welches oft in widerstandsfähigeren 3D-Druck-Filamenten zu finden ist.
-
-ietf:
-  short:
-    singular: IETF
-  long:
-    singular: Internet Engineering Task Force
-
-tcp:
-  short:
-    singular: TCP
-  long:
-    singular: Transmission Control Protocol
-
-icp:
-  short:
-    singular: ICP
-    plural: ICPs
-  long:
-    singular: Incident Response Playbook
-    plural: Incident Response Playbooks
-
-dos:
-  short:
-    singular: DoS
-  long:
-    singular: Denial of Service
-
-rdp:
-  short:
-    singular: RDP
-  long:
-    singular: Remote Desktop Protocol
-
-dpi:
-  short:
-    singular: DPI
-  long:
-    singular: Deep Packet Inspection
+    singular: Network Address Translation
+  description: Die Veränderung einer privaten IP-Adresse auf eine öffentliche, um die von ihr geschickten Daten im Internet routbar zu machen.
