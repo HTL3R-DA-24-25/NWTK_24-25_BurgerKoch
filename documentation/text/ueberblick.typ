@@ -1,4 +1,4 @@
-#import "@preview/htl3r-da:0.1.0" as htl3r
+#import "@preview/htl3r-da:1.0.0" as htl3r
 
 #htl3r.author("David Koch")
 = Einführung
@@ -34,7 +34,7 @@ Der Zugang ins Internet ist durch die Anbindung einer NAT-Cloud an AS20 bzw. AS2
 Für den Aufbau der Topologie wurde folgende Software verwendet:
 - GNS3 v2.2.53
 - VMware Workstation 17
-- Cisco vIOS Switch & Router Images 
+- Cisco vIOS Switch & Router Images
 - PfSense Linux Firewalls
 - FortiGateVM
 - VPCS
@@ -44,4 +44,3 @@ Die physischen Geräte, auf denen die Topologie läuft, sind zwei OptiPlex Tower
 Um die zwei miteinander zu verbinden, wurde in GNS die IP-Addresse von Arbeitsplatz 4 als Remote-Server eingetragen und nach einem erfolgreichen Verbindungsaufbau werden VMnet Adapter in GNS3 verwendet, um die Endgeräte in die bestehende GNS-Topologie einzubinden und eine Konnektivität zwischen den Geräten herzustellen.
 
 Zur Erstellung der Dokumentation wurden Typst und die Online-Plattform Draw.IO verwendet.
-

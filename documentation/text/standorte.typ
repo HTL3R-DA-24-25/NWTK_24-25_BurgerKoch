@@ -1,4 +1,4 @@
-#import "@preview/htl3r-da:0.1.0" as htl3r
+#import "@preview/htl3r-da:1.0.0" as htl3r
 
 = Standorte <standorte>
 
@@ -26,7 +26,7 @@ Langenzersdorf ist der Nebenstandort der Gartenbedarfs GmbH und ist der zweitgr�
 == Flex-Standorte
 
 Die Flex-Standorte dienen lediglich der Implementierung eines FlexVPN-Tunnels. Deswegen bestehen sie jeweils nur aus zwei Geräten: Einem Cisco Router als "Firewall" und einem #htl3r.short[vpcs] für Ping-Tests.
- 
+
 #htl3r.fspace(
   total-width: 40%,
   figure(
