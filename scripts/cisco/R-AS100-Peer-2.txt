@@ -66,8 +66,8 @@ neighbor 192.168.100.1 update-source g0/1
 neighbor 103.152.127.1 remote-as 20
 neighbor 103.152.127.1 update-source g0/0
 neighbor 103.152.127.1 distribute-list No_Transit_for_Burger in
-neighbor 125.152.103.1 remote-as 123
-neighbor 125.152.103.1 update-source g0/0
+neighbor 103.152.125.1 remote-as 123
+neighbor 103.152.125.1 update-source g0/2
 ex
 
 end

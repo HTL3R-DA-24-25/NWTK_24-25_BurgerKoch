@@ -124,7 +124,15 @@ ip arp inspection trust
 no shut
 ex
 
-int range g3/0-1
+int g3/0
+desc to_Dorf_File_Server_MIRROR
+switchport mode access
+switchport access vlan 31
+ip arp inspection trust
+no shut
+ex
+
+int range g3/1-2
 desc to_Dorf_Ubuntu_Servers
 switchport mode access
 switchport access vlan 100
@@ -132,19 +140,11 @@ ip arp inspection trust
 no shut
 ex
 
-int g3/2
+int g3/3
 desc to_IP_Phone_Langenzersdorf
 switchport mode access
 switchport access vlan 42
 switchport voice vlan 42
-ip arp inspection trust
-no shut
-ex
-
-int g3/3
-desc to_Fav_File_Server_MIRROR
-switchport mode access
-switchport access vlan 31
 ip arp inspection trust
 no shut
 ex
@@ -155,8 +155,13 @@ ip address 10.10.30.1 255.255.255.0
 no shut
 ex
 
-monitor session 1 source vlan 10 , 20 , 30 , 42 , 100 , 200 both
-monitor session 1 destination interface g3/2
+ip default-gateway 10.10.30.254
+
+monitor session 1 source vlan 10 , 20 , 30 , 100 , 200 both
+monitor session 1 destination interface g3/0
+
+logging host 10.10.100.10
+logging trap 7
 
 end
 wr

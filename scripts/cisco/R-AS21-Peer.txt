@@ -97,8 +97,8 @@ neighbor 20.20.21.2 remote-as 21
 neighbor 20.20.21.2 update-source lo1
 neighbor 103.152.127.2 remote-as 100
 neighbor 103.152.127.2 update-source g0/0
-neighbor 125.152.103.1 remote-as 123
-neighbor 125.152.103.1 update-source g0/2
+neighbor 103.152.126.1 remote-as 123
+neighbor 103.152.126.1 update-source g0/2
 ex
 
 end
