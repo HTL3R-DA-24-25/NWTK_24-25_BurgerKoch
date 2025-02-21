@@ -112,12 +112,13 @@ neighbor 6.6.6.4 remote-as 666
 neighbor 6.6.6.4 update-source lo1
 address-family vpnv4
 neighbor 6.6.6.4 activate
-ex
-address-family ipv4
-no neighbor 6.6.6.4 activate
+neighbor 6.6.6.4 send-community extended
 ex
 address-family ipv4 vrf Armut-Customer-1
 neighbor 31.25.42.1 remote-as 61
+neighbor 31.25.42.1 update-source g0/3
+neighbor 31.25.42.1 activate
+neighbor 31.25.42.1 next-hop-self
 ex
 ex
 
