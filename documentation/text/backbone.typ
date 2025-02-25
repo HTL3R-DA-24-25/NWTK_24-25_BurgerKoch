@@ -141,7 +141,7 @@ Für den automatischen Routenaustausch innerhalb von den Backbone-Netzwerken wer
 
 === Authentifizierung
 
-Jegliche Instanzen von #htl3r.short[ospf], #htl3r.short[rip] und #htl3r.short[bgp] im #htl3r.short[as]666 nutzen Authentifizierung für ihre Updates.
+Jegliche Instanzen von #htl3r.short[ospf] und #htl3r.short[rip] im #htl3r.short[as]666 nutzen Authentifizierung für ihre Updates.
 
 *OSPF:*
 - Key-String: ciscocisco
