@@ -55,5 +55,13 @@ network 10.6.66.8 0.0.0.3 area 1
 network 10.6.66.104 0.0.0.7 area 1
 ex
 
+! oob syslog
+logging trap 7
+logging host 10.6.66.108
+logging on
+
+debug mpls ldp bindings
+debug ip ospf hello
+
 end
 wr

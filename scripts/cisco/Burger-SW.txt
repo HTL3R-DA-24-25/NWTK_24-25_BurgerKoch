@@ -20,12 +20,21 @@ transport input ssh
 logging sync
 exit
 
+vtp mode transparent
+
 vlan 666
 name BLACKHOLE
 exit
 
+vlan 100
+name BURGER-LAN-ISOLATED
+private-vlan isolated
+ex
+
 vlan 10
 name BURGER-LAN
+private-vlan primary
+private-vlan association add 100
 exit
 
 int range gig 0/0 - 3 , gig 1/0 - 3 , gig 2/0 - 3 , gig 3/0 - 3
@@ -37,16 +46,21 @@ switchport access vlan 666
 shutdown
 exit
 
-int range gig 0/0 - 1
-switchport access vlan 10
+int range gig 0/1 - 2
+switchport mode private-vlan host
+switchport private-vlan host-association 10 100
 ip arp inspection trust
 no shutdown
 exit
 
-ip arp inspection vlan 10
-ip dhcp snooping vlan 10
-no spanning-tree vlan 1,10,666
-
 int gig 0/0
+switchport mode private-vlan promiscuous
+switchport private-vlan mapping 10 100
+ip arp inspection trust
 ip dhcp snooping trust
+no shutdown
 exit
+
+ip arp inspection vlan 10,100
+ip dhcp snooping vlan 10,100
+no spanning-tree vlan 1,10,666
