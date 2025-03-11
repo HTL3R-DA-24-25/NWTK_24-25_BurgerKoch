@@ -7,11 +7,11 @@
       it
     }
   }
+  #set outline.entry(fill: line(length: 100%, stroke: (dash: ("dot", 1em))),)
   #outline(
     target: selector(heading).after(<DA_BEGIN>),
     depth: 3,
     indent: 1em,
-    fill: line(length: 100%, stroke: (dash: ("dot", 1em))),
   )
 ]
 
