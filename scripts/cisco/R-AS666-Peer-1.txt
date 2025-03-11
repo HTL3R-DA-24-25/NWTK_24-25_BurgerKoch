@@ -80,7 +80,7 @@ ip prefix-list BOGON-BLOCK deny 10.0.0.0/8
 ip prefix-list BOGON-BLOCK deny 100.64.0.0/10
 ip prefix-list BOGON-BLOCK deny 127.0.0.0/8
 ip prefix-list BOGON-BLOCK deny 169.254.0.0/16
-ip prefix-list BOGON-BLOCK deny 172.16.0.0/12
+! ip prefix-list BOGON-BLOCK deny 172.16.0.0/12
 ip prefix-list BOGON-BLOCK deny 192.0.2.0/24
 ip prefix-list BOGON-BLOCK deny 192.168.0.0/16
 ip prefix-list BOGON-BLOCK deny 198.18.0.0/15
@@ -107,6 +107,17 @@ neighbor 6.6.6.3 update-source lo1
 neighbor 6.6.6.4 remote-as 666
 neighbor 6.6.6.4 update-source lo1
 ex
+
+! oob syslog
+logging trap 7
+logging host 10.6.66.116
+logging on
+
+debug ip bgp ipv4 unicast
+debug ip bgp ipv4 multicast
+debug ip bgp in
+debug ip bgp updates in
+debug ip bgp events
 
 end
 wr

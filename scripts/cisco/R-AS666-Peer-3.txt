@@ -75,6 +75,24 @@ network 10.6.66.20 0.0.0.3 area 1
 network 10.6.66.24 0.0.0.3 area 1
 ex
 
+ip prefix-list BOGON-BLOCK deny 0.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 10.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 100.64.0.0/10
+ip prefix-list BOGON-BLOCK deny 127.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 169.254.0.0/16
+! ip prefix-list BOGON-BLOCK deny 172.16.0.0/12
+ip prefix-list BOGON-BLOCK deny 192.0.2.0/24
+ip prefix-list BOGON-BLOCK deny 192.168.0.0/16
+ip prefix-list BOGON-BLOCK deny 198.18.0.0/15
+ip prefix-list BOGON-BLOCK deny 198.51.100.0/24
+ip prefix-list BOGON-BLOCK deny 203.0.113.0/24
+ip prefix-list BOGON-BLOCK deny 224.0.0.0/3
+ip prefix-list BOGON-BLOCK permit 0.0.0.0/0 le 32
+
+route-map BLOCK-BOGONS deny 10
+match ip address prefix-list BOGON-BLOCK
+route-map BLOCK-BOGONS permit 20
+
 router bgp 666
 bgp log-neighbor-changes
 network 87.120.166.0 mask 255.255.255.0

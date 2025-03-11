@@ -64,5 +64,12 @@ network 10.6.66.8 0.0.0.3 area 1
 network 10.6.66.112 0.0.0.7 area 1
 ex
 
+! oob syslog
+logging trap 7
+logging host 10.6.66.116
+logging on
+
+debug mpls ldp messages received
+
 end
 wr

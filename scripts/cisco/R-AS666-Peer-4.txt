@@ -41,6 +41,12 @@ mpls ip
 no shut
 ex
 
+int g0/1
+desc to_Linux_FW
+ip address 31.28.9.254 255.255.255.0
+no shut 
+ex
+
 ip vrf Armut-Customer-2
 rd 42069:1
 route-target both 42069:1
@@ -72,9 +78,28 @@ match ip address 1
 set local-preference 300
 ex
 
+ip prefix-list BOGON-BLOCK deny 0.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 10.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 100.64.0.0/10
+ip prefix-list BOGON-BLOCK deny 127.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 169.254.0.0/16
+! ip prefix-list BOGON-BLOCK deny 172.16.0.0/12
+ip prefix-list BOGON-BLOCK deny 192.0.2.0/24
+ip prefix-list BOGON-BLOCK deny 192.168.0.0/16
+ip prefix-list BOGON-BLOCK deny 198.18.0.0/15
+ip prefix-list BOGON-BLOCK deny 198.51.100.0/24
+ip prefix-list BOGON-BLOCK deny 203.0.113.0/24
+ip prefix-list BOGON-BLOCK deny 224.0.0.0/3
+ip prefix-list BOGON-BLOCK permit 0.0.0.0/0 le 32
+
+route-map BLOCK-BOGONS deny 10
+match ip address prefix-list BOGON-BLOCK
+route-map BLOCK-BOGONS permit 20
+
 router bgp 666
 bgp log-neighbor-changes
 network 31.6.28.0 mask 255.255.255.0
+network 31.28.9.0 mask 255.255.255.0
 neighbor 6.6.6.1 remote-as 666
 neighbor 6.6.6.1 update-source lo1
 neighbor 6.6.6.2 remote-as 666
@@ -83,12 +108,13 @@ neighbor 6.6.6.3 remote-as 666
 neighbor 6.6.6.3 update-source lo1
 address-family vpnv4
 neighbor 6.6.6.2 activate
-ex
-address-family ipv4
-no neighbor 6.6.6.2 activate
+neighbor 6.6.6.2 send-community extended
 ex
 address-family ipv4 vrf Armut-Customer-2
 neighbor 31.6.28.1 remote-as 62
+neighbor 31.6.28.1 update-source g0/3
+neighbor 31.6.28.1 activate
+neighbor 31.6.28.1 next-hop-self
 ex
 ex
 

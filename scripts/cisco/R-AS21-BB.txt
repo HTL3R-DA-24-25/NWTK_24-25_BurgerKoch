@@ -116,6 +116,7 @@ neighbor 20.20.21.3 route-reflector-client
 neighbor 20.20.22.2 remote-as 22
 neighbor 20.20.22.2 update-source lo1
 neighbor 20.20.22.2 ebgp-multihop 2
+neighbor 20.20.22.2 next-hop-self
 ex
 
 end

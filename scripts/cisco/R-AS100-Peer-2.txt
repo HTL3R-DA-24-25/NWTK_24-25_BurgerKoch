@@ -61,16 +61,14 @@ bgp log-neighbor-changes
 network 103.152.125.0 mask 255.255.255.0
 network 103.152.127.0 mask 255.255.255.252
 network 13.52.124.0 mask 255.255.255.0
-network 125.152.103.1 mask 255.255.255.255
 neighbor 192.168.100.1 remote-as 100
 neighbor 192.168.100.1 update-source g0/1
 neighbor 103.152.127.1 remote-as 20
 neighbor 103.152.127.1 update-source g0/0
 neighbor 103.152.127.1 distribute-list No_Transit_for_Burger in
+neighbor 103.152.125.1 remote-as 123
+neighbor 103.152.125.1 update-source g0/2
 ex
-
-ip route 125.152.103.1 255.255.255.255 103.152.127.1 100
-ip route 125.152.103.1 255.255.255.255 103.152.125.1 150
 
 end
 wr

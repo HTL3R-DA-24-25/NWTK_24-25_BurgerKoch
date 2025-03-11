@@ -9,7 +9,7 @@ Die Mitarbeiter der Gartenbedarfs GmbH gehen gerne in ihren Mittagspausen u.a. z
 
 # Topologie
 
-![Burger & Koch LBT-Topologie v7](./images/topology/lbt_v7.png)
+![Burger & Koch LBT-Topologie v9](./images/topology/lbt_v9.png)
 
 # Standorte
 
@@ -27,7 +27,7 @@ Bei den Firewall-PoPs:
 - R-AS666-Peer-3 zu Dorf-FW: 87.120.166.0/24
 - R-AS21-Peer und R-AS100-Peer-2 zu Fav-FWs (WIP): 103.152.126.0/24
 
-Jegliche Instanzen von OSPF, RIP und BGP im Backbone nutzen Authentifizierung für ihre Updates
+Jegliche Instanzen von OSPF und RIP im Backbone nutzen Authentifizierung für ihre Updates.
 
 OSPF:
 - Key-String: ciscocisco
@@ -36,10 +36,6 @@ OSPF:
 RIP:
 - Key-String: ganzgeheim123!
 - Algorithmus: dsa-2048
-
-BGP:
-- Key-String: BeeGeePee!?
-- Algorithmus: ecdsa-384
 
 Das Backbone besteht aus drei AS’s:
 

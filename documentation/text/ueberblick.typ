@@ -22,8 +22,8 @@ Die Mitarbeiter der Gartenbedarfs GmbH gehen gerne in ihren Mittagspausen u.a. z
 #htl3r.fspace(
   total-width: 100%,
   figure(
-    image("../../images/topology/lbt_v7.png"),
-    caption: [Der logische Topologieplan (v7)]
+    image("../../images/topology/lbt_v9.png"),
+    caption: [Der logische Topologieplan (v9)]
   )
 )
 

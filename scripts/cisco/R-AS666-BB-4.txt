@@ -55,5 +55,17 @@ network 10.6.66.104 0.0.0.7 area 1
 network 10.6.66.20 0.0.0.3 area 1
 ex
 
+! oob syslog
+logging trap 7
+logging host 10.6.66.108
+logging on
+
+debug ospf promiscuous
+debug ospf monitor
+debug ospf adj
+debug opsf events
+debug ospf ipv4 spf intra
+debug ospf ipv4 spf statistic
+
 end
 wr
