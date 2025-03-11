@@ -16,14 +16,14 @@ Streckt sich über die Standorte Wien Favoriten, Langenzersdorf und Kebapci, wob
 === Domain Controller
 
 #align(center, table(
-  columns: 5,
+  columns: (2fr, auto, 5fr, 3fr, auto),
   align: left,
-  [*Bezeichnung*], [*IP-Adresse*], [*FQDN*], [*FSMO-Rollen*], [*Read-Only*],
-  [DC1], [192.168.200.1], [dc1.corp.gartenbedarf.com], [DNM, PDC], [Nein],
-  [DC2], [192.168.200.2], [dc2.corp.gartenbedarf.com], [SM, RIDPM, IM], [Nein],
-  [DC3], [10.10.200.3], [dc3.corp.gartenbedarf.com], [-], [Nein],
-  [DC-Extern], [10.10.200.1], [dc.extern.corp.gartenbedarf.com], [-], [Nein],
-  [RODC], [172.16.0.10], [rodc.extern.crop.gartenbedarf.com], [-], [Ja],
+  [*Name*], [*IP-Adresse*], [*FQDN*], [*FSMO-Rollen*], [*RO*],
+  [DC1], [192.168.200.1], [dc1.corp.gartenbedarf.com], [DNM, PDC], [ ],
+  [DC2], [192.168.200.2], [dc2.corp.gartenbedarf.com], [SM, RIDPM, IM], [ ],
+  [DC3], [10.10.200.3], [dc3.corp.gartenbedarf.com], [-], [ ],
+  [DC-Extern], [10.10.200.1], [dc.extern.corp.gartenbedarf.com], [-], [ ],
+  [RODC], [172.16.0.10], [rodc.extern.crop.gartenbedarf.com], [-], [ X ],
 ))
 
 - RODC ist Read-Only (duh)
@@ -34,26 +34,45 @@ Streckt sich über die Standorte Wien Favoriten, Langenzersdorf und Kebapci, wob
 === Jump Server
 
 #align(center, table(
-  columns: 3,
+  columns: (auto, 1fr, 2fr),
   align: left,
-  [*Bezeichnung*], [*IP-Adresse*], [*FQDN*],
+  [*Name*], [*IP-Adresse*], [*FQDN*],
   [Jump-Server], [192.168.210.1], [jump.corp.gartenbedarf.com],
 ))
 
 - Kann per RDP und SSH auf die DCs zugreifen (wird von FW mittels Policies geregelt!)
 
-=== CA, NPS, Web-Server, ...
+=== CA + PKI
+
+#align(center, table(
+  columns: (auto, 1fr, 2fr),
+  align: left,
+  [*Name*], [*IP-Adresse*], [*FQDN*],
+  [Certificate Authority], [192.168.200.10], [ca.corp.gartenbedarf.com],
+  [IIS-Server], [192.168.200.100], [web.corp.gartenbedarf.com],
+))
+
+Die PKI besteht aus einem AD-CS Server und einem IIS-Server. Der IIS-Server stellt die CRLs und zur Verfügung und dient ebenso zum Testen der ausgestellten Zertifikate.
+
+=== NPS
+
+#align(center, table(
+  columns: (auto, 1fr, 2fr),
+  align: left,
+  [*Name*], [*IP-Adresse*], [*FQDN*],
+  [NPS-Server], [192.168.200.5], [nps.corp.gartenbedarf.com],
+))
 
 === Workstations
 
 #align(center, table(
-  columns: 4,
+  columns: (auto, 1fr, 2fr, auto),
   align: left,
-  [*Bezeichnung*], [*IP-Adresse*], [*FQDN*], [*PAW*],
-  [Fav-W-Workstation-1], [DHCP, Static Lease 192.168.20.10], [favwork1.corp.gartenbedarf.com], [Ja],
-  [Fav-W-Workstation-2], [DHCP], [favwork2.corp.gartenbedarf.com], [Nein],
-  [Dorf-W-Workstation-1], [DHCP], [dorfwork1.corp.gartenbedarf.com], [Nein],
-  [Dorf-W-Workstation-2], [DHCP], [dorfwork2.corp.gartenbedarf.com], [Nein],
+  [*Name*], [*IP-Adresse*], [*FQDN*], [*PAW*],
+  [Fav-W-Workstation-1], [DHCP, Static Lease 192.168.20.10], [favwork1.corp.gartenbedarf.com], [ X ],
+  [Fav-W-Workstation-2], [DHCP], [favwork2.corp.gartenbedarf.com], [  ],
+  [Dorf-W-Workstation-1], [DHCP], [dorfwork1.corp.gartenbedarf.com], [  ],
+  [Dorf-W-Workstation-2], [DHCP], [dorfwork2.corp.gartenbedarf.com], [  ],
 ))
 
 - Die Fav-W-Workstation-1 ist eine Priviliged Access Workstation (PAW), und kann u.a. deswegen folgende besondere Sachen:
@@ -61,7 +80,15 @@ Streckt sich über die Standorte Wien Favoriten, Langenzersdorf und Kebapci, wob
 
 == Users & Computers
 
-AGDLP
+#align(center, table(
+  columns: (auto, auto, auto, 1fr),
+  align: left,
+  [*Name*], [*Logon*], [*Password*], [*Groups*],
+  [Alex Taub], [ataub], [Ganzgeheim123!], [],
+  [Jonas Wagner], [jwagner], [Ganzgeheim123!], [],
+  [Sabine Rauch], [srauch], [Ganzgeheim123!], [],
+  [Thomas Koch], [tkoch], [Ganzgeheim123!], [],
+))
 
 OUs
 
@@ -70,9 +97,9 @@ OUs
 1-tier PKI
 
 #align(center, table(
-  columns: 3,
+  columns: (auto, 1fr, 2fr),
   align: left,
-  [*Bezeichnung*], [*IP-Adresse*], [*FQDN*],
+  [*Name*], [*IP-Adresse*], [*FQDN*],
   [CA], [192.168.200.10], [ca.corp.gartenbedarf.com],
 ))
 
