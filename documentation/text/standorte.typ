@@ -35,6 +35,14 @@ Die Flex-Standorte dienen lediglich der Implementierung eines FlexVPN-Tunnels. D
   )
 )
 
+#htl3r.code-file(
+  caption: "EIGRP-Konfiguration auf R-Flex-Edge-2",
+  filename: [scripts/cisco/R-Flex-Edge-2],
+  ranges: ((69, 73),),
+  lang: "cisco",
+  text: read("../../scripts/cisco/R-Flex-Edge-2.txt")
+)
+
 == Armut-Standorte
 
 #htl3r.fspace(

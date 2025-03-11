@@ -113,6 +113,12 @@ Nutzt ein #htl3r.short[ospf] Underlay mit #htl3r.short[mpls] als Overlay.
 - Pfadmanipulation mittels Local Preference von 100 auf 300 -> Traffic für den Standort Favoriten innerhalb AS666 immer über R-AS666-Peer-2 an AS100 ausschicken statt AS20
 - Prefix-List die alle Bogon-Adressen enthält auf die e#htl3r.short[bgp]-Neighbors inbound angewendet werden, um Bogons zu blockieren
 
+Unter anderem steht in AS666 ein OOB-Syslog-Server, welcher von den Routern XXX, YYY und ZZZ diverse Logs zu den Protokollen LDP bzw. MPLS, OSPF und BGP gesammelt und gespeichert hat. Bei der Konfiguration von den Debug-Befehlen auf den Routern bleiben diese leider nach einem Neustart des Geräts nicht bestehen, also mussten sie nach jedem (Neu-)Start erneut eingegeben werden. Folgende Debug-Befehle wurden hierbei verwendet:
+- fdfdfd
+- fdfd 
+- hghgghgh
+
+
 #align(center, table(
   columns: 5,
   align: left,
