@@ -3,7 +3,7 @@
 #htl3r.author("David Koch")
 = Einführung
 
-AAAAAAAAAAAA
+Dies ist die Dokumentation zur die "Little Big Topo" der 5ten Klasse im Ausbildungszweig Netzwerktechnik. In den folgenden Kapiteln wird ein Überblick über die eingesetzten Konzepte und die für ihre Umsetzung nötigen Konfigurationsschritte geboten.
 
 == Firma Backstory
 Gartenbedarfs GmbH
@@ -12,22 +12,21 @@ CEO: Huber "Huber" Huber
 
 Verkauft u.a. die Rasensprengerköpfe "Sprühkönig" und "Sprengmeister" als auch den Stoff "Huberit".
 
-Die Mitarbeiter der Gartenbedarfs GmbH gehen gerne in ihren Mittagspausen u.a. zu Kebapci futtern, ABER die Gartenbedarfs GmbH ist heimlich mit Kebapci geschäftlich und infrastrukturtechnisch verwickelt, da Kepabci als Front für die Schwarzarbeit und Geldwäsche der Gartenbedarfs GmbH genutzt wird.
+Die Mitarbeiter der Gartenbedarfs GmbH gehen gerne in ihren Mittagspausen u.a. zu Kebapci futtern, aber die Gartenbedarfs GmbH ist heimlich mit Kebapci geschäftlich und infrastrukturtechnisch verwickelt, da Kepabci als Front für die Schwarzarbeit und Geldwäsche der Gartenbedarfs GmbH genutzt wird.
 
 == Topologie <topologie>
 
-40 Netzwerkgeräte
-28 Endgeräte
+Die gesamte Topologie besteht insgesamt aus 40 Netzwerkgeräten und 28 Endgeräten. Alle Geräte innerhalb der Topologie werden auf zwei Echtgeräten virtualisiert.
 
 #htl3r.fspace(
   total-width: 100%,
   figure(
-    image("../../images/topology/lbt_v9.png"),
+    image("../images/topology/lbt_v9.png"),
     caption: [Der logische Topologieplan (v9)]
   )
 )
 
-Der Zugang ins Internet ist durch die Anbindung einer NAT-Cloud an AS20 bzw. AS21 ermöglicht worden.
+Der Zugang ins Internet ist durch die Anbindung einer #htl3r.short[nat]-Cloud an #htl3r.short[as]20 bzw. #htl3r.short[as]21 ermöglicht worden.
 
 == Verwendete Geräte & Software
 

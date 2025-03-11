@@ -3,7 +3,7 @@
 = Firewalls
 
 #htl3r.author("David Koch")
-== FortiGate
+== FortiGate <fortigate>
 
 Die Firma Fortinet ist einer der Weltmarktführer im Bereich Firewalls mit ihrer Reihe an FortiGate-Firewalls. Sie bieten nicht nur physische Modelle, sondern auch virtuelle Instanzen. In der Topologie werden insgesamt drei solcher virtuellen FortiGates eingesetzt, um eine industrienahe Firewall-Implementierung mit SOTA-Features erreichen.
 
@@ -17,26 +17,57 @@ Bei der Umsetzung der hier aufgelisteten Features wurde immer nur die CLI verwen
 
 === Grundkonfiguration
 
-#htl3r.code-file(
-  caption: "Grundkonfiguration der Fav-FW-1",
-  filename: [scripts/fortinet/Fav-FW-1.conf],
-  ranges: ((6, 10),),
-  lang: "python",
-  text: read("../../scripts/fortinet/Fav-FW-1.conf")
-)
+#htl3r.code(caption: "Grundkonfiguration der Fav-FW-1", description: none)[
+```fortios
+config system global
+    set hostname Fav-FW-1
+    set admintimeout 30
+    set timezone 26
+end
+```
+]
 
 === Interfaces
 
 Bevor die Implementierung von den Firewall-Features auf der FortiGate stattfinden kann, müssen -- wie auf allen anderen Netzwerkgeräten auch -- zuerst die Netzwerkinterfaces konfiguriert werden.
 
-#htl3r.code-file(
-  caption: "Interface-Konfigurationsbeispiele auf Fav-FW-1",
-  filename: [scripts/fortinet/Fav-FW-1.conf],
-  ranges: ((20, 33), (61, 70), (151, 151)),
-  skips: ((34, 0), (71, 0)),
-  lang: "python",
-  text: read("../../scripts/fortinet/Fav-FW-1.conf")
-)
+#htl3r.code(caption: "Interface-Konfigurationsbeispiele auf Fav-FW-1", description: none)[
+```fortios
+config system interface
+    edit port3
+        set desc "Used to enroll VM license OOB"
+        set mode static
+        set ip 192.168.0.100 255.255.255.0
+        set allowaccess ping http https
+    next
+    edit port1
+        set desc "to_R_AS21_Peer"
+        set mode static
+        set ip 103.152.126.1 255.255.255.0
+        set role wan
+        set allowaccess ping
+    next
+...
+edit "Dorf_VPN_GW_LB"
+        set vdom root
+        set ip 125.152.103.1 255.255.255.255
+        set allowaccess ping
+        set type loopback
+    next
+    edit VLAN_10
+        set desc "Linux Clients"
+        set vdom root
+        set interface port2
+        set type vlan
+        set vlanid 10
+        set mode static
+        set ip 192.168.10.254 255.255.255.0
+        set allowaccess ping
+    next
+...
+end
+```
+]
 
 === Lizensierung
 
@@ -59,13 +90,19 @@ Folgende Konfigurationsoptionen müssen gesetzt werden, um ein #htl3r.short["ha"
 - Passwort
 - Heartbeat-Interfaces (Die Point-to-Point Interfaces, die für die HA-Kommunikation genutzt werden sollen)
 
-#htl3r.code-file(
-  caption: "Konfiguration des HA Clusters auf Fav-FW-1",
-  filename: [scripts/fortinet/Fav-FW-1.conf],
-  ranges: ((12, 18),),
-  lang: "python",
-  text: read("../../scripts/fortinet/Fav-FW-1.conf")
-)
+#htl3r.code(caption: "Konfiguration des HA Clusters auf Fav-FW-1", description: none)[
+```fortios
+config system ha
+    set mode a-a
+    set group-id 1
+    set group-name Koch_Burger_LBT_Cluster
+    set password ganzgeheim123!
+    set hbdev port9 10 port10 20
+    set override enable
+    set priority 200
+end
+```
+]
 
 Nachdem auf beiden Geräten die richtige Konfiguration vorgenommen worden ist, beginnen sie die gegenseitige Synchronisation ihrer gesamten Konfigurationen:
 
@@ -122,7 +159,7 @@ Um eine "Captive Portal"-Authentifizierung auf einer FortiGate-Firewall zu konfi
 
 #htl3r.fspace(
   figure(
-    image("../../images/screenshots/Screenshot 2025-02-19 130103.png"),
+    image("../images/screenshots/Screenshot 2025-02-19 130103.png"),
     caption: [Die erfolgreiche Authentifizierung mit AD-Benutzer über RADIUS]
   )
 )
@@ -271,20 +308,40 @@ Das heißt, dass folgende Konfigurationen übersprungen werden können:
 - IPSec transform-set
 - IPSec profile
 
-#htl3r.code-file(
-  caption: "FlexVPN-Konfiguration auf R-Flex-Edge-1",
-  filename: [scripts/cisco/R-Flex-Edge-1],
-  ranges: ((42, 65),),
-  lang: "cisco",
-  text: read("../../scripts/cisco/R-Flex-Edge-1.txt")
-)
+#htl3r.code(caption: "FlexVPN-Konfiguration auf R-Flex-Edge-1", description: none)[
+```cisco
+crypto ikev2 keyring mykeys
+peer R-Flex-Edge-2
+address 13.52.124.1
+pre-shared-key IchMussFlexen!
+ex
+
+crypto ikev2 profile default
+match identity remote address 13.52.124.1 255.255.255.255 
+authentication local pre-share
+authentication remote pre-share
+keyring local mykeys
+dpd 60 2 on-demand
+ex
+
+crypto ipsec profile default
+set ikev2-profile default
+ex
+
+int tun0
+ip address 10.20.69.1 255.255.255.0
+tunnel source g0/3
+tunnel destination 13.52.124.1
+tunnel protection ipsec profile default
+ex```
+]
 
 === MPLS Overlay VPN
 
 Falls der Kunde bzw. Standortinhaber die privaten Addressbereiche seiner Standorte per VPN verknüpft haben möchte aber auf seinen Edge-Routern oder Firewalls keinen eigenen VPN-Tunnel konfigurieren möchte, kann vom Betreiber des Backbones ein MPLS Overlay VPN eingesetzt werden.
 
-In unserer Topologie ist diese Art von VPN im AS666 -- zwischen den Routern XXX und YYY --- realisiert. Folgende Konfigurationsschritte sind für einen MPLS Overlay VPN nötig:
-- Im Backbone wird MPLS zur Datenübertragung verwendet
-- Die Border-Router haben VRFs für die Verbindung der Standorte
-- Die Edge-Router der Standorte peeren mit den Border-Routern über BGP
-- In der BGP-Konfiguration der Border-Router werden die Edge-Router in der Addressfamilie "VPNv4" als Nachbarn angegeben
+In unserer Topologie ist diese Art von VPN im AS666 -- zwischen den Border-Routern R-AS666-Peer-2 und R-AS666-Peer-4 -- realisiert. Folgende Konfigurationsschritte sind für einen MPLS Overlay VPN nötig:
+- Im Backbone wird MPLS zur Datenübertragung verwendet.
+- Die Border-Router haben VRFs für die Abkapselung der Routen bei Verbindung der Standorte.
+- Die Edge-Router der Standorte peeren mit den Border-Routern über eBGP.
+- In der BGP-Konfiguration der Border-Router werden die Edge-Router in der Addressfamilie "VPNv4" als Nachbarn angegeben.

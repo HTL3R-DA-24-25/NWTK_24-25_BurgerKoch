@@ -13,6 +13,7 @@
     depth: 3,
     indent: 1em,
   )
+   #set outline.entry(fill: line(length: 100%, stroke: (dash: ("dot", 1em))))
 ]
 
 #create-page()

@@ -1,15 +1,13 @@
 #import "@preview/htl3r-da:1.0.0" as htl3r
 
 #show: htl3r.diplomarbeit.with(
-  title: "Fenrir",
-  subtitle: "Zum Schutz von OT-Netzwerken",
+  title: "Little Big Topo",
+  subtitle: "Dokumentationsbuch der Gruppe 4",
   department: "ITN",
   school-year: "2024/2025",
   authors: (
     (name: "Julian Burger", supervisor: "Christian Schöndorfer", role: "Mitarbeiter"),
     (name: "David Koch", supervisor: "Christian Schöndorfer", role: "Projektleiter"),
-    (name: "Bastian Uhlig", supervisor: "Clemens Kussbach", role: "Stv. Projektleiter"),
-    (name: "Gabriel Vogler", supervisor: "Clemens Kussbach", role: "Mitarbeiter"),
   ),
   supervisor-incl-ac-degree: (
     "Prof. Dipl.-Ing. Christian Schöndorfer",
