@@ -120,3 +120,9 @@ laps:
   long:
     singular: Local Administrator Password Solution
   description: Eine Ansammlung an GPOs, welche es ermöglichen, die Passwörter von Lokalen Administrator-Benutzer auf Workstations zentral über das AD zu verwalten.
+
+ad:
+  short:
+    singular: AD
+  long:
+    singular: Active Directory

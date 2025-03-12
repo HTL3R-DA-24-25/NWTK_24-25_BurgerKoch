@@ -126,13 +126,13 @@ end
 
 === HA Cluster
 
-Ein #htl3r.long["ha"] Cluster besteht aus zwei oder mehr FortiGates und dient der Ausfallsicherheit durch die automatisierte Konfigurationsduplikation zwischen den Geräten. Bei einem erfolgreichen Clustering verhalten sich die Geräte im Cluster so, als wären sie ein Einziges.
+Ein HA Cluster besteht aus zwei oder mehr FortiGates und dient der Ausfallsicherheit durch die automatisierte Konfigurationsduplikation zwischen den Geräten. Bei einem erfolgreichen Clustering verhalten sich die Geräte im Cluster so, als wären sie ein Einziges.
 
 Vorraussetzungen:
-- Zwei oder mehr FortiGate-Firewalls mit #htl3r.short["ha"]-Unterstützung
+- Zwei oder mehr FortiGate-Firewalls mit HA-Unterstützung
 - Mindestens eine Point-to-Point Verbindung zwischen den Firewalls
 
-Folgende Konfigurationsoptionen müssen gesetzt werden, um ein #htl3r.short["ha"]-Clustering zu erzielen:
+Folgende Konfigurationsoptionen müssen gesetzt werden, um ein HA-Clustering zu erzielen:
 - Clustering-Mode (Active-Passive oder Active-Active)
 - Group-ID
 - Group-Name

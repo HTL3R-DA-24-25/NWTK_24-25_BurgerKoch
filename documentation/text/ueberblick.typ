@@ -31,7 +31,7 @@ Die gesamte Topologie besteht insgesamt aus 40 Netzwerkgeräten und 28 Endgerät
 )
 (Für eine größere Ansicht des logischen Topologieplans siehe @app1)
 
-Der Zugang ins Internet ist durch die Anbindung einer #htl3r.short[nat]-Cloud an #htl3r.short[as]20 bzw. #htl3r.short[as]21 ermöglicht worden.
+Der Zugang ins Internet ist durch die Anbindung einer NAT-Cloud an AS20 bzw. AS21 ermöglicht worden.
 
 == Verwendete Geräte & Software
 

@@ -9,19 +9,19 @@
 
 #let create-page(
   title: "Little Big Topo",
-  subtitle: "Team 4",
+  subtitle: "Gruppe 4",
   department: "IT",
   school-year: "2024/2025",
   authors: (
     (
       name: "David Koch",
       supervisor: "Christian Schöndorfer",
-      role: "Projektleiter",
+      role: "-",
     ),
     (
       name: "Julian Burger",
-      supervisor: "Clemens Kussbach",
-      role: "Stv. Projektleiter",
+      supervisor: "Christian Schöndorfer",
+      role: "-",
     )
   ),
   date: datetime(year: 2024, month: 12, day: 1),
@@ -91,11 +91,16 @@
         leading: 1.4em,
         text(size: 10pt)[
           durch #h(1fr) unter Anleitung von \
+          /* we thought this would look better, but the LaTeX Template doesn't have a line
           #v(-5pt)
           #line(length: 100%, stroke: 0.5pt)
           #v(-5pt)
+          */
           #for author in authors [
-            #text(size: 14pt, strong(author.name)) #h(1fr) #author.supervisor \
+            #text(size: 12pt, strong(author.name)) #h(1fr) #text(
+              size: 12pt,
+              author.supervisor,
+            ) \
           ]
         ],
       )

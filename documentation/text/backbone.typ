@@ -25,7 +25,7 @@ Public-Peering-Adressbereiche:
 - Zwischen AS666 (R-AS666-Peer-1) und AS20 (R-AS22-Peer): 45.84.107.0/30
 - Zwischen AS20 (R-AS21-Peer) und AS100 (R-AS100-Peer-2): 103.152.127.0/30
 
-Bei den Firewall-#htl3r.shortpl[pop]:
+Bei den Firewall-POP:
 - R-AS100-Peer-1 zu Kebapci-FW: 31.25.11.0/24
 - R-AS666-Peer-3 zu Dorf-FW: 87.120.166.0/24
 - R-AS21-Peer zu Fav-FW-1: 103.152.126.0/24
@@ -60,9 +60,9 @@ AS20 ist eine BGP-Confederation und besteht aus den Sub-AS's 21 & 22. Insgesamt 
   )
 )
 
-Nutzt ein #htl3r.short[rip] (über GRE-Tunnel zwischen Edge-Routern) Overlay, #htl3r.short[ospf] Underlay.
+Nutzt ein RIP (über GRE-Tunnel zwischen Edge-Routern) Overlay, OSPF Underlay.
 
-#htl3r.short[bgp] Features:
+BGP Features:
 - R-AS21-BB dient als Route-Reflector
 - R-AS21-Internet teilt seine Default Route ins Internet den anderen Peers mit
 
@@ -104,9 +104,9 @@ Besteht aus insgesamt nur 2 Routern:
   )
 )
 
-Braucht kein Overlay/Underlay, nur i#htl3r.short[bgp] weil das AS aus lediglich zwei Routern besteht.
+Braucht kein Overlay/Underlay, nur iBGP weil das AS aus lediglich zwei Routern besteht.
 
-#htl3r.short[bgp] Features:
+BGP Features:
 - Distribution Lists (Traffic von Burger-FW wird auf allen Border-Routern blockiert)
 
 #htl3r.code(caption: "Konfiguration der Distribution List auf R-AS100-Peer-1", description: none)[
@@ -160,9 +160,9 @@ Besteht aus 13 Routern und 2 L2-Switches:
   )
 )
 
-Nutzt ein #htl3r.short[ospf] Underlay mit #htl3r.short[mpls] als Overlay.
+Nutzt ein OSPF Underlay mit MPLS als Overlay.
 #pagebreak()
-#htl3r.short[bgp] Features:
+BGP Features:
 - Pfadmanipulation mittels Local Preference von 100 auf 300 -> Traffic für den Standort Favoriten innerhalb AS666 immer über R-AS666-Peer-2 an AS100 ausschicken statt AS20.
 
 #htl3r.code(caption: "Route-Map für die Pfadmanipulation per Local Preference Erhöhung", description: none)[
@@ -182,7 +182,7 @@ ex
 ```
 ]
 
-- Prefix-List die alle Bogon-Adressen enthält auf die e#htl3r.short[bgp]-Neighbors inbound angewendet werden, um Bogons zu blockieren.
+- Prefix-List die alle Bogon-Adressen enthält auf die eBGP-Neighbors inbound angewendet werden, um Bogons zu blockieren.
 - MPLS-Overlay-VPN für die Armut-Standorte, nähere Informationen sind in @mpls-vpn zu finden.
 
 #htl3r.code(caption: "Bogon-Blocking per Prefix-List", description: none)[
@@ -263,11 +263,11 @@ Funktioniert sehr ähnlich zum Dorf-File-Server (quasi der Dorf-Syslog-Server), 
 
 == Dynamisches Routing
 
-Für den automatischen Routenaustausch innerhalb von den Backbone-Netzwerken werden die dynamischen Routingprotokolle #htl3r.short[ospf] und #htl3r.short[rip] verwendet. Für den externen Routenaustausch zwischen #htl3r.shortpl[as] wird #htl3r.short[bgp] verwendet.
+Für den automatischen Routenaustausch innerhalb von den Backbone-Netzwerken werden die dynamischen Routingprotokolle OSPF und RIP verwendet. Für den externen Routenaustausch zwischen ASen wird BGP verwendet.
 
 === Authentifizierung
 
-Jegliche Instanzen von #htl3r.short[ospf] und #htl3r.short[rip] im #htl3r.short[as]666 nutzen Authentifizierung für ihre Updates.
+Jegliche Instanzen von OSPF und RIP im AS666 nutzen Authentifizierung für ihre Updates.
 
 *OSPF:*
 - Key-String: ciscocisco
@@ -309,6 +309,6 @@ ex
 
 Damit Traffic zu den Firewalls vom Standort Wien Favoriten findet, wird nicht nur die Loopback-Adresse von den Fav-FWs von R-AS21-Peer und R-AS100-Peer-2 advertised, sondern es wird auf den zwei Geräten ebenfalls eine statische Route konfiguriert, weil sie sonst die Loopback-Adresse nicht finden/erreichen können.
 
-*Alternative:* Firewalls der Kunden haben ein  #htl3r.short[bgp]-Peering mit Border-Routern im Backbone, um ihr Loopback per e#htl3r.short[bgp] bekanntzugeben.
+*Alternative:* Firewalls der Kunden haben ein BGP-Peering mit Border-Routern im Backbone, um ihr Loopback per eBGP bekanntzugeben.
 
-Es wird ebenfalls eine statische Route auf R-AS21-Internet verwendet, um allen anderen Geräten in der Topologie einen Zugang zum Internet per #htl3r.short[nat]-Cloud zu ermöglichen.
+Es wird ebenfalls eine statische Route auf R-AS21-Internet verwendet, um allen anderen Geräten in der Topologie einen Zugang zum Internet per NAT-Cloud zu ermöglichen.

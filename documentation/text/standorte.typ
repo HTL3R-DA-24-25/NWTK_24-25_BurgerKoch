@@ -134,7 +134,6 @@ ex
     - DHCP Snooping, Dynamic ARP inspection (DAI)
     - Blackhole VLAN auf ungenutzten Interfaces
 
-<<<<<<< HEAD
 #htl3r.code(caption: "Befehle zur Härtung des Fav-Core-1", description: none)[
 ```cisco
 ip arp inspection vlan 10,20,21,30,31,42,100,150,200,210,666
@@ -159,8 +158,6 @@ ex
 ```
 ]
   
-=======
->>>>>>> 24cec1e (add abbr)
 ==== Bastion
 Die Bastion dient theoretisch der automatischen Provisionierung von den Clients, Servern und Switches am Standort Wien Favoriten mittels Ansible.
 
@@ -385,7 +382,7 @@ exit
 #htl3r.author("David Koch")
 == Flex-Standorte
 
-Die Flex-Standorte dienen lediglich der Implementierung eines FlexVPN-Tunnels. Deswegen bestehen sie jeweils nur aus zwei Geräten: Einem Cisco Router als "Firewall" und einem #htl3r.short[vpcs] für Ping-Tests.
+Die Flex-Standorte dienen lediglich der Implementierung eines FlexVPN-Tunnels. Deswegen bestehen sie jeweils nur aus zwei Geräten: Einem Cisco Router als "Firewall" und einem VPCS für Ping-Tests.
 
 #htl3r.fspace(
   total-width: 35%,
@@ -423,7 +420,6 @@ Beide Armut-Standorte sind miteinander über einen MPLS Overlay VPN über das Ba
 
 #pagebreak()
 == Viktor-Standort
-<<<<<<< HEAD
 
 Der "Viktor-Standort" ist der zweite Home-Office-Standort der Topologie (nach Praunstraße) und wird statt einem Edge-Router oder einer Firewall durch eine Ubuntu-basierte Linux-Firewall vom öffentlichen Netz abgegrenzt.
 
@@ -485,7 +481,3 @@ iptables -A FORWARD -i Viktor-LAN -o outside -p icmp -j ACCEPT
 iptables -A FORWARD -i outside -o Viktor-LAN -p icmp -m state --state RELATED,ESTABLISHED -j ACCEPT
 ```
 ]
-=======
-TODO
-#pagebreak(weak: true)
->>>>>>> 24cec1e (add abbr)

@@ -57,7 +57,7 @@ wobei beide Root-DCs in Favoriten stehen.
   [IIS-Server], [192.168.200.100], [web.corp.gartenbedarf.com],
 ))
 
-Die #htl3r.short[pki] besteht aus einem AD-CS Server und einem IIS-Server. Der IIS-Server stellt die CRLs und zur Verfügung und dient ebenso zum Testen der ausgestellten Zertifikate.
+Die PKI besteht aus einem AD-CS Server und einem IIS-Server. Der IIS-Server stellt die CRLs und zur Verfügung und dient ebenso zum Testen der ausgestellten Zertifikate.
 
 === NPS
 
@@ -65,7 +65,7 @@ Die #htl3r.short[pki] besteht aus einem AD-CS Server und einem IIS-Server. Der I
   columns: (auto, 1fr, 2fr),
   align: left,
   [*Name*], [*IP-Adresse*], [*FQDN*],
-  [#htl3r.short[nps]-Server], [192.168.200.5], [nps.corp.gartenbedarf.com],
+  [NPS-Server], [192.168.200.5], [nps.corp.gartenbedarf.com],
 ))
 
 #pagebreak(weak: true)
@@ -74,18 +74,18 @@ Die #htl3r.short[pki] besteht aus einem AD-CS Server und einem IIS-Server. Der I
 #align(center, table(
   columns: (auto, 1fr, 2fr, auto),
   align: left,
-  [*Name*], [*IP-Adresse*], [*FQDN*], [*#htl3r.short[paw]*],
+  [*Name*], [*IP-Adresse*], [*FQDN*], [*PAW*],
   [Fav-W-Workstation-1], [DHCP, Static Lease 192.168.20.10], [favwork1.corp.gartenbedarf.com], [ X ],
   [Fav-W-Workstation-2], [DHCP], [favwork2.corp.gartenbedarf.com], [  ],
   [Dorf-W-Workstation-1], [DHCP], [dorfwork1.corp.gartenbedarf.com], [  ],
   [Dorf-W-Workstation-2], [DHCP], [dorfwork2.corp.gartenbedarf.com], [  ],
 ))
 
-Die Fav-W-Workstation-1 ist eine Priviliged Access Workstation (#htl3r.short[paw]), und kann u.a. deswegen folgende besondere Sachen:
+Die Fav-W-Workstation-1 ist eine Priviliged Access Workstation (PAW), und kann u.a. deswegen folgende besondere Sachen:
 - Auf den Jump-Server per RDP und SSH zugreifen
 
 == PowerShell Konfiguration
-Alle Domain-Controller wurden grundlegend mittels PowerShell-Scripts konfiguriert. Lediglich GUI-Exclusive Teile wie z.B.: #htl3r.short[nps] und IIS wurde im GUI erledigt. GPOs wurde aus Bequemlichkeitsgründen ebenfalls im GUI konfiguriert. Natürlich kann man sich im Nachhinein die GPOs exportieren und per PowerShell einspielen.
+Alle Domain-Controller wurden grundlegend mittels PowerShell-Scripts konfiguriert. Lediglich GUI-Exclusive Teile wie z.B.: NPS und IIS wurde im GUI erledigt. GPOs wurde aus Bequemlichkeitsgründen ebenfalls im GUI konfiguriert. Natürlich kann man sich im Nachhinein die GPOs exportieren und per PowerShell einspielen.
 
 Die Grundkonfiguration sieht hierbei wiefolgt aus:
 #htl3r.code-file(
@@ -115,7 +115,7 @@ Natürlich ist auf allen DCs Win-RM aktiviert um diese mittels Jump-Server admin
 )
 
 == Users & Computers
-Innerhalb des ADs existieren folgende Benutzer:
+Innerhalb der AD-Umgebung existieren folgende Benutzer:
 #align(center, table(
   columns: (auto, auto, auto, 1fr),
   align: left,
@@ -126,7 +126,7 @@ Innerhalb des ADs existieren folgende Benutzer:
   [Thomas Koch], [tkoch], [Ganzgeheim123!], [Sales],
 ))
 
-Die Gruppen sind dann Weiter nach AGDLP wiefolgt unterteilt:
+Die Gruppen sind dann weiter nach AGDLP wiefolgt unterteilt:
 #htl3r.fspace(
   figure(
     image("../images/ad/lbt_agdlp_v1.png"),
@@ -134,7 +134,7 @@ Die Gruppen sind dann Weiter nach AGDLP wiefolgt unterteilt:
   )
 )
 
-Die Domain-Locals finden auf einem DFS share anwendung, welcher zwei Verzeichnise beinhaltet:
+Die Domain-Locals finden auf einem DFS-Share anwendung, welcher zwei Verzeichnisse beinhaltet:
 - Management
 - Sales
 Welche Gruppen wie Zugriff haben ist selbsterklärend.
@@ -153,7 +153,7 @@ Welche Gruppen wie Zugriff haben ist selbsterklärend.
 
 #pagebreak(weak: true)
 == PKI
-Es wurde eine 1-tier #htl3r.short[pki] aufgesetzt.
+Es wurde eine 1-tier PKI aufgesetzt.
 
 #align(center, table(
   columns: (auto, 1fr, 2fr),
@@ -165,7 +165,7 @@ Es wurde eine 1-tier #htl3r.short[pki] aufgesetzt.
 Autoenrollment der Zertifikate per GPO für:
 - Clients
 - VPN
-Natürlich dazu auch passende Templates, sowie templates für Sub-CA (notwendig fürs Captive-Portal) und IIS.
+Natürlich dazu auch passende Templates, sowie Templates für Sub-CA (notwendig für das Captive-Portal) und IIS.
 
 === CA Konfiguration
 Die CA wurde ausschließlich mit der PowerShell aufgesetzt:
@@ -214,7 +214,7 @@ Der IIS-Server wurde mittels GUI erstellt und beinhaltet folgende Features:
 
 #pagebreak(weak: true)
 == NPS
-#htl3r.short[nps] wurde als Radius-Server für das Captive-Portal verwendet und kann auf alle Domain-User zugreifen. Dadurch kann ein jeder AD-User, um das Internet zu browsen, seinen eigenen Benutzer verwenden. Die Abfragen wurden mittels #htl3r.short[nps]-Policy auf die FortiGate begrenzt und gelten ebenfalls auch nur für das VLAN der Workstations.
+NPS wurde als Radius-Server für das Captive-Portal verwendet und kann auf alle Domain-User zugreifen. Dadurch kann ein jeder AD-User, um das Internet zu browsen, seinen eigenen Benutzer verwenden. Die Abfragen wurden mittels NPS-Policy auf die FortiGate begrenzt und gelten ebenfalls auch nur für das VLAN der Workstations.
 
 #htl3r.fspace(
   total-width: 100%,
@@ -244,7 +244,7 @@ Der IIS-Server wurde mittels GUI erstellt und beinhaltet folgende Features:
 Es wurde ein DFS angelegt, welches zwei Shares kombiniert:
 - Management -> DC1
 - Sales -> DC2
-Der Kombinierte DFS Share trägt den Namen "Staff" und wird mittels GPO on Logon gemounted. Auf den Verzeichnisen im DFS liegen Permissions nach AGDLP-Konzept.
+Der Kombinierte DFS Share trägt den Namen "Staff" und wird mittels GPO on Logon gemounted. Auf den Verzeichnissen im DFS sind Berechtigungen nach dem AGDLP-Konzept konfiguriert worden.
 
 #htl3r.fspace(
   total-width: 100%,
@@ -260,7 +260,7 @@ Der Kombinierte DFS Share trägt den Namen "Staff" und wird mittels GPO on Logon
 
 #pagebreak(weak: true)
 == GPOs
-Im Überblick wurde folgende GPOs angelegt:
+Im Überblick wurden folgende GPOs angelegt:
 #htl3r.fspace(
   total-width: 50%,
   figure(
@@ -290,11 +290,11 @@ Es wurden folgende Baseline GPOs genutzt:
 
 #pagebreak(weak: true)
 === LAPS
-#htl3r.short[laps] wurde ebenfalls angewand, hiermit werden die Passwörter der Lokalen Administratoren ebenfalls vom AD verwaltet, heruntergeladen werden kann sich der Installer vom Internet: https://www.microsoft.com/en-us/download/details.aspx?id=46899&gt
+LAPS wurde ebenfalls angewand, hiermit werden die Passwörter der Lokalen Administratoren ebenfalls vom AD verwaltet, heruntergeladen werden kann sich der Installer aus dem Internet: https://www.microsoft.com/en-us/download/details.aspx?id=46899&gt
 
-Auf den DCs wurden die GPOs draufgespielt und auf Computer in einer bestimmte OU namens "#htl3r.short[laps]" angewandt. Diese OU wurde speziell für diesen Zweck erstellt.
+Auf den DCs wurden die GPOs draufgespielt und auf Computer in einer bestimmte OU namens "LAPS" angewandt. Diese OU wurde speziell für diesen Zweck erstellt.
 
-Da nur die #htl3r.short[paw] in der #htl3r.short[laps] OU ist, hat auch nur diese ein Admin-PWD welches von #htl3r.short[laps] gemanaged wird:
+Da nur die PAW in der LAPS OU ist, hat auch nur diese ein Admin-PWD welches von LAPS gemanaged wird:
 #htl3r.fspace(
   figure(
     image("../images/ad/laps_pwd.png"),

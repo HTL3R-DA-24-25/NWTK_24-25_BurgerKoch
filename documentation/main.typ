@@ -19,8 +19,8 @@
   disable-cover: true,
   print-ref: false,
   generative-ai-clause: none,
-  abbreviation: yaml("abbr.yml"),
-  bibliography-content: bibliography("refs.yml", full: true, title: [Literaturverzeichnis]),
+  abbreviation: none,
+  bibliography-content: none,
 )
 
 #include "text/cover.typ"
