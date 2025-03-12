@@ -24,15 +24,15 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   columns: 2,
   align: left,
   [*ID*], [*Bezeichnung*],
-  [20], [Windows Clients], 
-  [30], [Switch Management], 
-  [31], [Switch R-SPAN Mirroring], 
-  [42], [VoIP-Geräte], 
-  [100], [Ubuntu Server (ohne Bastion)], 
-  [150], [Bastion], 
-  [200], [Windows Server], 
-  [210], [Jump Server], 
-  [666], [Blackhole], 
+  [20], [Windows Clients],
+  [30], [Switch Management],
+  [31], [Switch R-SPAN Mirroring],
+  [42], [VoIP-Geräte],
+  [100], [Ubuntu Server (ohne Bastion)],
+  [150], [Bastion],
+  [200], [Windows Server],
+  [210], [Jump Server],
+  [666], [Blackhole],
 ))
 
 === Geräte
@@ -79,7 +79,7 @@ Siehe @fortigate.
     - Root-, Loop, BPDU-Guard
     - DHCP Snooping, Dynamic ARP inspection (DAI)
     - Blackhole VLAN auf ungenutzten Interfaces
-  
+
 ==== Bastion
 TODO
 
@@ -119,17 +119,17 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
   columns: 2,
   align: left,
   [*ID*], [*Bezeichnung*],
-  [10], [Linux Clients], 
-  [20], [Windows Clients], 
-  [30], [Switch Management], 
-  [31], [Switch Mirroring], 
-  [42], [VoIP-Geräte], 
-  [100], [Ubuntu Server], 
-  [200], [Windows Server], 
-  [666], [Blackhole], 
+  [10], [Linux Clients],
+  [20], [Windows Clients],
+  [30], [Switch Management],
+  [31], [Switch Mirroring],
+  [42], [VoIP-Geräte],
+  [100], [Ubuntu Server],
+  [200], [Windows Server],
+  [666], [Blackhole],
 ))
 
-=== Geräte 
+=== Geräte
 
 - 1x FortiGate
   - Dorf-FW (10.10.xx.254)

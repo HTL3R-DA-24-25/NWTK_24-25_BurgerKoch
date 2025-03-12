@@ -1,7 +1,9 @@
 #import "@preview/htl3r-da:1.0.0" as htl3r
 
+#pagebreak(weak: true)
 #htl3r.author("Julian Burger")
 = Active Directory <ad>
+Das AD wurde, bevor es in die GNS-Topology eingefügt wurde mittels "Simulation-Router" aufgezogen. Dies hat es uns ermöglicht schnell und Unabhängig voneinander zu arbeiten. Der "Simulation-Router" mimikt die Netze wie in der echten Topology und Routet zwischen diesen.
 
 == Überblick
 
@@ -9,7 +11,11 @@ Root-Domain: `corp.gartenbedarf.com`
 
 Sonstige Domains: `extern.corp.gartenbedarf.com`
 
-Streckt sich über die Standorte Wien Favoriten, Langenzersdorf und Kebapci, wobei beide Root-DCs in Favoriten stehen.
+Streckt sich über die Standorte:
+- Wien Favoriten
+- Langenzersdorf
+- Kebapci
+wobei beide Root-DCs in Favoriten stehen.
 
 == Geräte
 
@@ -51,7 +57,7 @@ Streckt sich über die Standorte Wien Favoriten, Langenzersdorf und Kebapci, wob
   [IIS-Server], [192.168.200.100], [web.corp.gartenbedarf.com],
 ))
 
-Die PKI besteht aus einem AD-CS Server und einem IIS-Server. Der IIS-Server stellt die CRLs und zur Verfügung und dient ebenso zum Testen der ausgestellten Zertifikate.
+Die #htl3r.short[pki] besteht aus einem AD-CS Server und einem IIS-Server. Der IIS-Server stellt die CRLs und zur Verfügung und dient ebenso zum Testen der ausgestellten Zertifikate.
 
 === NPS
 
@@ -59,26 +65,27 @@ Die PKI besteht aus einem AD-CS Server und einem IIS-Server. Der IIS-Server stel
   columns: (auto, 1fr, 2fr),
   align: left,
   [*Name*], [*IP-Adresse*], [*FQDN*],
-  [NPS-Server], [192.168.200.5], [nps.corp.gartenbedarf.com],
+  [#htl3r.short[nps]-Server], [192.168.200.5], [nps.corp.gartenbedarf.com],
 ))
 
+#pagebreak(weak: true)
 === Workstations
 
 #align(center, table(
   columns: (auto, 1fr, 2fr, auto),
   align: left,
-  [*Name*], [*IP-Adresse*], [*FQDN*], [*PAW*],
+  [*Name*], [*IP-Adresse*], [*FQDN*], [*#htl3r.short[paw]*],
   [Fav-W-Workstation-1], [DHCP, Static Lease 192.168.20.10], [favwork1.corp.gartenbedarf.com], [ X ],
   [Fav-W-Workstation-2], [DHCP], [favwork2.corp.gartenbedarf.com], [  ],
   [Dorf-W-Workstation-1], [DHCP], [dorfwork1.corp.gartenbedarf.com], [  ],
   [Dorf-W-Workstation-2], [DHCP], [dorfwork2.corp.gartenbedarf.com], [  ],
 ))
 
-- Die Fav-W-Workstation-1 ist eine Priviliged Access Workstation (PAW), und kann u.a. deswegen folgende besondere Sachen:
-  - Auf den Jump-Server per RDP und SSH zugreifen
+Die Fav-W-Workstation-1 ist eine Priviliged Access Workstation (#htl3r.short[paw]), und kann u.a. deswegen folgende besondere Sachen:
+- Auf den Jump-Server per RDP und SSH zugreifen
 
 == PowerShell Konfiguration
-Alle Domain-Controller wurden grundlegend mittels PowerShell-Scripts konfiguriert. Lediglich GUI-Exclusive Teile wie z.B.: NPS und IIS wurde im GUI erledigt. GPOs wurde aus Bequemlichkeitsgründen ebenfalls im GUI konfiguriert. Natürlich kann man sich im Nachhinein die GPOs exportieren und per PowerShell einspielen.
+Alle Domain-Controller wurden grundlegend mittels PowerShell-Scripts konfiguriert. Lediglich GUI-Exclusive Teile wie z.B.: #htl3r.short[nps] und IIS wurde im GUI erledigt. GPOs wurde aus Bequemlichkeitsgründen ebenfalls im GUI konfiguriert. Natürlich kann man sich im Nachhinein die GPOs exportieren und per PowerShell einspielen.
 
 Die Grundkonfiguration sieht hierbei wiefolgt aus:
 #htl3r.code-file(
@@ -144,9 +151,9 @@ Welche Gruppen wie Zugriff haben ist selbsterklärend.
   )
 )
 
+#pagebreak(weak: true)
 == PKI
-
-1-tier PKI
+Es wurde eine 1-tier #htl3r.short[pki] aufgesetzt.
 
 #align(center, table(
   columns: (auto, 1fr, 2fr),
@@ -205,8 +212,9 @@ Der IIS-Server wurde mittels GUI erstellt und beinhaltet folgende Features:
   )
 )
 
+#pagebreak(weak: true)
 == NPS
-NPS wurde als Radius-Server für das Captive-Portal verwendet und kann auf alle Domain-User zugreifen. Dadurch kann ein jeder AD-User, um das Internet zu browsen, seinen eigenen Benutzer verwenden. Die Abfragen wurden mittels NPS-Policy auf die FortiGate begrenzt und gelten ebenfalls auch nur für das VLAN der Workstations.
+#htl3r.short[nps] wurde als Radius-Server für das Captive-Portal verwendet und kann auf alle Domain-User zugreifen. Dadurch kann ein jeder AD-User, um das Internet zu browsen, seinen eigenen Benutzer verwenden. Die Abfragen wurden mittels #htl3r.short[nps]-Policy auf die FortiGate begrenzt und gelten ebenfalls auch nur für das VLAN der Workstations.
 
 #htl3r.fspace(
   total-width: 100%,
@@ -280,12 +288,13 @@ Es wurden folgende Baseline GPOs genutzt:
 - PolicyAnalyzer
 - Windows Server 2022 Security Baseline
 
+#pagebreak(weak: true)
 === LAPS
-LAPS wurde ebenfalls angewand, hiermit werden die Passwörter der Lokalen Administratoren ebenfalls vom AD verwaltet, heruntergeladen werden kann sich der Installer vom Internet: https://www.microsoft.com/en-us/download/details.aspx?id=46899&gt
+#htl3r.short[laps] wurde ebenfalls angewand, hiermit werden die Passwörter der Lokalen Administratoren ebenfalls vom AD verwaltet, heruntergeladen werden kann sich der Installer vom Internet: https://www.microsoft.com/en-us/download/details.aspx?id=46899&gt
 
-Auf den DCs wurden die GPOs draufgespielt und auf Computer in einer bestimmte OU namens "LAPS" angewandt. Diese OU wurde speziell für diesen Zweck erstellt.
+Auf den DCs wurden die GPOs draufgespielt und auf Computer in einer bestimmte OU namens "#htl3r.short[laps]" angewandt. Diese OU wurde speziell für diesen Zweck erstellt.
 
-Da nur die PAW in der LAPS OU ist, hat auch nur diese ein Admin-PWD welches von LAPS gemanaged wird:
+Da nur die #htl3r.short[paw] in der #htl3r.short[laps] OU ist, hat auch nur diese ein Admin-PWD welches von #htl3r.short[laps] gemanaged wird:
 #htl3r.fspace(
   figure(
     image("../images/ad/laps_pwd.png"),
