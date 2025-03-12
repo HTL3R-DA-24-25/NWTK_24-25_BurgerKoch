@@ -92,3 +92,31 @@ nat:
   long:
     singular: Network Address Translation
   description: Die Veränderung einer privaten IP-Adresse auf eine öffentliche, um die von ihr geschickten Daten im Internet routbar zu machen.
+
+nps:
+  short:
+    singular: NPS
+  long:
+    singular: Network Policy Server
+  description: Ein Server welcher mittels RADIUS, sowie anderen Protokollen, Authentifizierungen von Benutzerkonten durchführen kann.
+
+pki:
+  short:
+    singular: PKI
+  long:
+    singular: Public Key Infrastruktur
+  description: Mehrere Dienste welche zusammenarbeiten um Zertifikate zu verwalten. Darunter fällt das Austellen, Zurückziehen und Verifizieren von Zertifikaten.
+
+paw:
+  short:
+    singular: PAW
+  long:
+    singular: Privileged Access Workstation
+  description: Eine besonders gut gehärtete Windows-Workstation, welcher es gestattet ist die AD-Domäne zu verwalten. Meist wird dies mittels Jump-Server/Bastion realisiert.
+
+laps:
+  short:
+    singular: LAPS
+  long:
+    singular: Local Administrator Password Solution
+  description: Eine ansammlung an GPOs, welche es ermöglichen die Passwörter von Lokalen Administrator-Benutzer auf Workstations über das AD zu verwalten.
