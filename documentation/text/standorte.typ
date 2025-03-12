@@ -69,16 +69,92 @@ Folgende Features wurden im Rahmen dieses Standorts implementiert:
 ==== FortiGates
 Siehe @fortigate.
 
-==== Switches
+==== Switches <switches-fav>
   - PVST+
+
+#htl3r.code(caption: "PVST+ Konfiguration auf den Favoriten-Switches", description: none)[
+```cisco
+sp mode rapid-pvst
+sp vlan 10,20,21,30,31,42,100,150,200,210,666 priority 4096
+
+vlan 10
+name Linux_Clients
+ex
+vlan 20
+name Windows_Clients
+ex
+...
+```
+]
+
   - Management-Interface auf VLAN 30, IPs siehe oben
   - VTP für die automatische Verteilung von VLAN-Informationen
+
+#htl3r.code(caption: "VPN-Konfiguration auf Fav-Core-1", description: none)[
+```cisco
+vtp domain 5CN
+vtp password 5CN
+vtp version 3
+vtp mode server
+vtp pruning
+do vtp primary
+```
+]
+
   - Bei redundanten Verbindungen untereinander EtherChannel mittels LACP aggregieren (inklusive Load-Balancing)
+
+#htl3r.code(caption: "Etherchannel-Konfiguration auf Fav-Core-1", description: none)[
+```cisco
+port-channel load-balance src-mac
+...
+int range g0/0-1
+desc to_Fav_Access_1
+switchport trunk encap dot1q
+switchport mode trunk
+channel-group 1 mode active
+no shut
+ex
+...
+int port-channel1
+desc PO_to_Fav_Access_1
+switchport trunk encap dot1q
+switchport mode trunk
+switchport trunk allowed vlan 1,10,20,21,30,31,42,100,150,200,210
+ip arp inspection trust
+no shut
+ex
+```
+]
+
   - Switchport Security (Hardening)
     - Gehärteter PVST+ Prozess
     - Root-, Loop, BPDU-Guard
     - DHCP Snooping, Dynamic ARP inspection (DAI)
     - Blackhole VLAN auf ungenutzten Interfaces
+
+#htl3r.code(caption: "Befehle zur Härtung des Fav-Core-1", description: none)[
+```cisco
+ip arp inspection vlan 10,20,21,30,31,42,100,150,200,210,666
+ip dhcp snooping vlan 10,20,21,30,31,42,100,150,200,210,666
+
+int range g0/0-3, g1/0-3, g2/0-3, g3/0-3
+desc UNUSED
+switchport nonegotiate
+switchport port-security mac-address sticky
+switchport port-security aging time 20
+switchport mode access
+switchport access vlan 666
+shut
+ex
+
+int g3/0
+...
+ip arp inspection trust
+ip dhcp snooping trust
+no shut
+ex
+```
+]
   
 ==== Bastion
 TODO
@@ -88,7 +164,7 @@ TODO
   - Synchronisiert seine Dateien mit Dorf-File-Server mittels lsyncd
   - Erhält R-SPAN Daten der Fav-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
 
-==== VPN-Server
+==== VPN-Server <wireguard>
 Ein WireGuard VPN-Server dient am Standort Wien Favoriten als alternativer RAS-VPN-Endpunkt zum RAS-VPN auf den FortiGate-Firewalls.
 
 ==== Active Directory
@@ -167,30 +243,64 @@ Siehe @fortigate.
     - Spanning-Tree deaktiviert
   - Spiegelt Traffic mittels SPAN an den Dorf-File-Server.
 
+Für die Konfigurations-Snippets der oben aufgelisteten Switch-Features siehe @switches-fav (Switches in Wien Favoriten).
+
 ==== Dorf-File-Server
   - Hostet einen SMB-Share.
   - Synchronisiert seine Dateien mit Fav-File-Server mittels lsyncd.
-  - Erhält SPAN-Daten des Dorf-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab.
+  - Erhält SPAN-Daten des Dorf-Switches, verarbeitet diese mittels T-Shark/TCPDump und speichert das auf einem Log-Share ab.
+
+Der Dorf-File-Server ist doppelt mit dem Dorf-SW verbunden. Über eine Verbindung läuft der "herkömmliche" Traffic, z.B. ICMP-Request und Syslogs, auf der zweiten Verbindung wird ausschließlich Mirror-Traffic vom Switch aus übertragen. Diese Verbindungen müssen getrennt behandelt werden, da der Mirror-Traffic über einen promiscuous Port am Dorf-File-Server empfangen werden muss -> es wird nicht darauf geschaut, ob der Empfänger usw. stimmt, die Pakete werden trotzdem verarbeitet bzw. gespeichert.
+
+Mit folgendem TCPDump-Befehl lässt sich der Mirror-Traffic auslesen und in einer PCAP-Datei speichern:
+#htl3r.code()[
+```bash
+tcpdump -i MIRROR -nn -s0 -w /var/log/mirrored_traffic.pcap
+```
+]
+
+#htl3r.fspace(
+  figure(
+    image("../images/screenshots/Screenshot 2025-02-19 172553.png"),
+    caption: [Die Ausgabe von TCPDump beim Mirror-Traffic-Capturing]
+  )
+)
+
+Um die empfangenen Syslogs zu begutachten wurde keine spezielle Softwarelösung verwendet, da die GUI fehlt. Als "Proof of Concept" reicht das Auslesen des Syslog-Pfades unter Ubuntu, welcher nun mit Logs vom Dorf-SW gefüllt ist:
+#htl3r.code()[
+```bash
+cat /var/log/syslog | tail -n 10
+```
+]
+
+#htl3r.fspace(
+  figure(
+    image("../images/screenshots/Screenshot 2025-02-19 175710.png"),
+    caption: [Syslogs des Dorf-SW auf Dorf-File-Server]
+  )
+)
 
 ==== Docker-Host
 Hostet folgende Services innerhalb von Docker-Containern mit eigenen IPs (siehe oben): NGINX, Bind9, Grafana und Prometheus.
 
-==== Active Directory
-Am Standort Langenzersdorf stehen als AD-integrierte Endgeräte eine CA, zwei DCs, ein Jump-Server, ein Web-Server, ein NPS und mehrere Windows Workstations (darunter eine PAW).
+#htl3r.fspace(
+  figure(
+    image("../images/screenshots/Screenshot 2025-03-12 122556.png"),
+    caption: [Screenshot der NGINX-Website am Docker-Host]
+  )
+)
 
-Für nähere Informationen siehe @ad. TODO
-  - DC3 und DC-Extern nutzen beide Windows Server Core
-  - Hosten die AD-Domäne corp.gartenbedarf.com bzw. extern.corp.gartenbedarf.com
-- Linux Workstations
-  - WIP
-- Windows Workstations
-  - Sind Teil der corp.gardenbedarf.com Domäne
-  - Sind in einem private VLAN (20 bzw. 21) und können sich nicht gegenseitig erreichen
+(Die Website hat ein valides Zertifikat von der CA ausgestellt bekommen, wenn die Dorf-L-Workstation Auto-Enrollment hätte -- so wie die Windows Workstations -- wäre die HTTPS-Verbindung sicher)
+
+==== Active Directory
+Am Standort Langenzersdorf stehen als AD-integrierte Endgeräte zwei DCs und zwei Windows Workstations.
+
+Für nähere Informationen siehe @ad.
 
 #pagebreak()
 == Kebapci
 
-fdfdfdfdfdfd
+Der private Adressbereich an diesem Standort entspricht dem Subnetz 172.16.0.0/24.
 
 #htl3r.fspace(
   total-width: 55%,
@@ -200,6 +310,9 @@ fdfdfdfdfdfd
   )
 )
 
+Der Standort "Kebapci" ist der dritte und letzte der AD-integrierten Standorte. Da er als "unsicher" gilt, wird hier ein RODC eingesetzt (für weitere Informationen siehe @ad). Unter anderem ist hier ein eigener Webserver und eine AD-integrierte Windows Workstation zu finden.
+
+#pagebreak()
 == Praunstraße
 
 Der Standort Praunstraße symbolisiert ein kleines Heimnetzwerk, welches von einem Mitarbeiter der Gartenbedarfs GmbH für das Home-OFfice verwendet wird. Hier ist lediglich ein Internetzugriff gegeben, über welchen beispielsweise gesurft und eine RAS-VPN-Verbindung zum Firmenstandort Wien Favoriten aufgebaut werden kann.
@@ -245,6 +358,7 @@ exit
 ```
 ]
 
+#pagebreak()
 #htl3r.author("David Koch")
 == Flex-Standorte
 
@@ -271,6 +385,7 @@ network 10.20.69.0 0.0.0.255
 ex```
 ]
 
+#pagebreak()
 == Armut-Standorte
 
 Beide Armut-Standorte sind miteinander über einen MPLS Overlay VPN über das Backbone-Netz von AS666 verbunden. Für weitere Informationen siehe @mpls-vpn.
@@ -283,6 +398,7 @@ Beide Armut-Standorte sind miteinander über einen MPLS Overlay VPN über das Ba
   )
 )
 
+#pagebreak()
 == Viktor-Standort
 
 Der "Viktor-Standort" ist der zweite Home-Office-Standort der Topologie (nach Praunstraße) und wird statt einem Edge-Router oder einer Firewall durch eine Ubuntu-basierte Linux-Firewall vom öffentlichen Netz abgegrenzt.
@@ -340,7 +456,8 @@ sysctl -p
 Anschließend können z.B. folgende iptables-Regeln gesetzt werden, um einen statischen NAT (PAT) nach außen zu starten und nur ICMP-Datenverkehr durchzulassen:
 #htl3r.code(caption: "iptables-Regeln der Linux-FW", description: none)[
 ```bash
-sysctl -w net.ipv4.ip_forward=1
-sysctl -p
+iptables -t nat -A POSTROUTING -o outside -j MASQUERADE
+iptables -A FORWARD -i Viktor-LAN -o outside -p icmp -j ACCEPT
+iptables -A FORWARD -i outside -o Viktor-LAN -p icmp -m state --state RELATED,ESTABLISHED -j ACCEPT
 ```
 ]

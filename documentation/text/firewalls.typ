@@ -159,13 +159,36 @@ end
 
 Nachdem auf beiden Geräten die richtige Konfiguration vorgenommen worden ist, beginnen sie die gegenseitige Synchronisation ihrer gesamten Konfigurationen.
 
-Zur Überprüfung können folgende Befehle verwendet werden:
-- `fdfdfd`
-- `fdfdfdf`
+Zur Überprüfung kann der Befehl `get system ha status` verwendet werden:
+#htl3r.fspace(
+  figure(
+    image("../images/screenshots/Screenshot 2025-03-12 130910_1.png"),
+    caption: [Ausgabe des `get system ha status` Befehls (oberer Teil)]
+  )
+)
+
+#htl3r.fspace(
+  figure(
+    image("../images/screenshots/Screenshot 2025-03-12 130910_2.png"),
+    caption: [Ausgabe des `get system ha status` Befehls (unterer Teil)]
+  )
+)
 
 === NAT
 
 Damit die alle Client-PCs als auch manche Server der Standorte Wien Favoriten und Langenzersdorf die öffentlichen Adressen im LBT-Netzwerk sowie das Internet erreichen können, braucht es eine Art von NAT bzw. PAT.
+
+#htl3r.code(caption: "Der NAT-Pool für den Standort Wien Favoriten", description: none)[
+```fortios
+config firewall ippool
+    edit "NAT_Public_IP_Pool"
+        set startip 103.152.126.69
+        set endip 103.152.126.69
+        set type one-to-one
+    next
+end
+```
+]
 
 #htl3r.code(caption: "Die non-VPN-Traffic PAT-to-Outside Firewall-Policy", description: none)[
 ```fortios
@@ -234,22 +257,169 @@ end
 
 === VPNs
 
-Alle VPNs auf den FortiGates sind PSK-basiert.
+Alle VPNs auf den FortiGates sind PSK-basiert. Es wurden folgende VPNs implementiert:
+- site-to-site VPN zwischen Wien Favoriten und Langenzersdorf (FortiGate zu FortiGate)
+- site-to-site VPN zwischen Langenzersdorf und Kebapci (FortiGate zu PfSense)
+- RAS-VPN für Wien Favoriten
+- Wireguard-VPN (RAS) für Wien Favoriten, siehe @wireguard.
 
-==== Site-to-Site IPsec VPN
+Da es zwei VPN-Endpunkte für Favoriten gibt (Fav-FW-1 und Fav-FW-2), muss ein "künstlicher" Endpunkt erstellt werden, welcher beide Geräte repräsentiert: Eine gemeinsame Loopback-Adresse. Für Details zu der Verteilung dieser Loopback-Adresse an das öffentlich Netz siehe @fgt-bgp.
 
-für loopback bgp verteilung: @fgt-bgp.
+==== Site-to-Site IPsec VPN <s2s-vpn>
+
+Um die Standorte Favoriten, Langenzersdorf und "Kebapci" miteinander zu verknüpfen, das heißt, dass sich die Geräte gegenseitig über ihre privaten Adressen erreichen können, werden zwei site-to-site IPsec VPNs eingesetzt. Beide VPN-Tunnel münden am Standort Langenzersdorf, denn dieser dient als "Verteiler", damit Geräte aus Favoriten (ohne eine direkte Tunnel-Anbindung zu haben) auch nach "Kebapci" kommen können.
+
+Die folgenden Snippets sind aus der Sicht der Favoriten-Firewalls, d.h. es wird nur ein site-to-site Phase-1-Tunnel-Interface nach Langenzersdorf konfiguriert (ACHTUNG: Es braucht jedoch trotzdem ZWEI Phase-2-Interfaces!):
+
+#htl3r.code(caption: "Konfiguration des site-to-site VPNs von Favoriten nach Langenzersdorf", description: none)[
+```fortios
+config vpn ipsec phase1-interface
+    edit "VPN_to_Lang"
+        set interface "Dorf_VPN_GW_LB"
+        set ike-version 2
+        set peertype any
+        set net-device disable
+        set proposal aes128-sha256 aes256-sha256 aes128gcm-prfsha256 aes256gcm-prfsha384 chacha20poly1305-prfsha256
+        set remote-gw 87.120.166.1
+        set psksecret TesterinoKoch123!
+    next
+end
+
+...
+
+config vpn ipsec phase2-interface
+    edit "VPN_to_Lang"
+        set phase1name "VPN_to_Lang"
+        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+        set auto-negotiate enable
+        set src-addr-type name
+        set dst-addr-type name
+        set src-name Favoriten_LOCAL
+        set dst-name Langenzersdorf_REMOTE
+    next
+    edit "VPN_to_Kebapci"
+        set phase1name "VPN_to_Lang"
+        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+        set auto-negotiate enable
+        set src-addr-type name
+        set dst-addr-type name
+        set src-name Favoriten_LOCAL
+        set dst-name Kebapci_REMOTE
+    next
+end
+
+...
+
+config firewall policy
+    edit 3
+        set name "site-to-site VPN inbound DORF"
+        set srcintf "VPN_to_Lang"
+        set dstintf "port2" "VLAN_10" "VLAN_20" "VLAN_21" "VLAN_30" "VLAN_31" "VLAN_100" "VLAN_150" "VLAN_200" "VLAN_210"
+        set srcaddr "Langenzersdorf_REMOTE" "Kebapci_REMOTE"
+        set dstaddr "Favoriten_LOCAL"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 4
+        set name "site-to-site VPN outbound DORF"
+        set srcintf "port2" "VLAN_10" "VLAN_20" "VLAN_21" "VLAN_30" "VLAN_31" "VLAN_100" "VLAN_150" "VLAN_200" "VLAN_210"
+        set dstintf "VPN_to_Lang"
+        set srcaddr "Favoriten_LOCAL"
+        set dstaddr "Langenzersdorf_REMOTE" "Kebapci_REMOTE"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+    next
+    ...
+end
+```
+]
 
 ==== RAS-VPN
+
+Der RAS-VPN nach Wien Favoriten hat folgende Parameter:
+- IKE-Version: v1
+- Mode: Aggressive
+- Erlaubte Proposals: AES256-SHA256, AES256-SHA1
+- Erlaubte DH-Gruppen: 2, 5, 14
+- VPN-Typ auf der FortiGate: "Dialup-Cisco"
+- Peer-ID: 69420
+- Split-Tunneling: aktiviert
+- PSK: \_IUseArchBTW\_
+
+#htl3r.code(caption: "Konfiguration der RAS-VPN Phase 1 und 2 Interfaces", description: none)[
+```fortios
+config vpn ipsec phase1-interface
+    edit "RAS_for_Praun"
+        set type dynamic
+        set interface "Dorf_VPN_GW_LB"
+        set mode aggressive
+        set peertype one
+        set net-device disable
+        set mode-cfg enable
+        set proposal aes256-sha256 aes256-sha1
+        set comments "VPN: RAS_for_Praun (Created by VPN wizard)"
+        set dhgrp 14 5 2
+        set wizard-type dialup-cisco
+        set xauthtype auto
+        set authusrgrp "RAS_Group"
+        set peerid "69420"
+        set ipv4-start-ip 192.168.69.10
+        set ipv4-end-ip 192.168.69.150
+        set dns-mode auto
+        set ipv4-split-include "RAS_for_Praun_split"
+        set psksecret _IUseArchBTW_
+    next
+end
+
+...
+
+config vpn ipsec phase2-interface
+    edit "RAS_for_Praun"
+        set phase1name "RAS_for_Praun"
+        set proposal aes256-sha256 aes256-md5 aes256-sha1
+        set pfs disable
+        set keepalive enable
+        set comments "VPN: RAS_for_Praun (Created by VPN wizard)"
+    next
+end
+```
+]
+
+Bei der Konfiguration des RAS-VPN muss noch zusätzlich eine eigene Firewall-Policy erstellt werden, um den Tunnel-Traffic durchzulassen. Die Konfiguration ähnelt stark der von den site-to-site VPN Policies in @s2s-vpn.
+
+Der RAS-VPN wurde über die Burger-Workstation am Standort Praunstraße getestet. Es wurde zum Aufbau der Verbindung das Package `network-manager-vpnc` genutzt. Folgende Konfiguration des VPN-Interfaces wurde auf der Workstation vorgenommen:
+
+#htl3r.fspace(
+  total-width: 70%,
+  figure(
+    image("../images/screenshots/Screenshot 2025-02-25 120030.png"),
+    caption: [NetworkManager-Konfiguration zur Nutzung des RAS-VPN]
+  )
+)
+
+#htl3r.fspace(
+  total-width: 70%,
+  figure(
+    image("../images/screenshots/Screenshot 2025-02-25 120049.png"),
+    caption: [NetworkManager-Konfiguration zur Nutzung des RAS-VPN (erweitert)]
+  )
+)
 
 === Captive Portal
 
 Bevor die Windows Clients (in VLAN 20) externe Hosts und Dienste erreichen können, müssen sie sich über ein sogenanntes "Captive Portal" bei der Firewall authentifizieren. Für die Authentifizierung wird der AD-integrierte NPS-Server genutzt, als Protokoll wird hierbei RADIUS verwendet.
 
-Um eine "Captive Portal"-Authentifizierung auf einer FortiGate-Firewall zu konfigurieren, AAAAAA:
+Um eine "Captive Portal"-Authentifizierung auf einer FortiGate-Firewall zu konfigurieren, muss zuerst der :
 
 
-
+#htl3r.fspace(
+  figure(
+    image("../images/screenshots/Screenshot 2025-02-19 130103.png"),
+    caption: [Die erfolgreiche Authentifizierung mit AD-Benutzer über RADIUS]
+  )
+)
 
 #htl3r.fspace(
   figure(
@@ -262,7 +432,44 @@ Um eine "Captive Portal"-Authentifizierung auf einer FortiGate-Firewall zu konfi
 
 HTTPS-Traffic verläuft zwischen den Endgeräten TLS-verschlüsselt, wodurch die Firewalls nicht den Datenverkehr auf Schadsoftware oder andere unerwünschte Inhalten überprüfen können. Die Lösung zu diesem Problem ist die sogenannte "SSL Inspection", der Datenverkehr wird von der Firewall entschlüsselt (Original-Zertifikat wird entfernt), geprüft und anschließend wieder verschlüsselt (neues Zertifikat wird eingefügt).
 
-AAAAAAAAAAAa
+#htl3r.code(caption: "DHCP-Server-Konfiguration für VLAN 20 (inkl. Static Lease)", description: none)[
+```fortios
+config firewall ssl-ssh-profile
+    edit custom-deep-inspection
+        config ssl
+            set inspect-all deep-inspection
+            set client-certificate inspect
+            set unsupported-ssl-version block
+            set unsupported-ssl-cipher block
+            set unsupported-ssl-negotiation block
+            set expired-server-cert block
+            set untrusted-server-cert block
+            set cert-validation-timeout ignore
+            set cert-validation-failure block
+            set sni-server-cert-check strict
+            set min-allowed-ssl-version tls-1.3
+        end
+        config https
+            set client-certificate inspect
+            set unsupported-ssl-version block
+            set unsupported-ssl-cipher block
+            set unsupported-ssl-negotiation block
+        end
+        set server-cert-mode re-sign
+    next
+end
+```
+]
+
+Das Zertifikat kann klarerweise nicht direkt über die CLI eingespielt werden, also musste es nachträglich im Web-Dashboard der FortiGate hochgeladen werden:
+#htl3r.fspace(
+  figure(
+    image("../images/screenshots/Screenshot 2025-02-19 180028.png"),
+    caption: [Das hochgeladene Zertifikat der CA im FortiGate-Dashboard]
+  )
+)
+
+Das im obigen Snippet sichtbare Inspection Profil "custom-deep-inspection" muss anschließend einem Interface (z.B. dem nach außen) zugewiesen werden.
 
 === Traffic Shaping
 
@@ -343,7 +550,6 @@ Ein Webfilter ist eine Art der DPI, bei welcher HTTP(S)-Packets auf die abgefrag
 
 Je nach Standort werden unterschiedliche Websiten blockiert. Während in Wien X (ehem. Twitter) und die Website der HTL Spengergasse blockiert sind, sind in Langenzersdorf ebenfalls X aber dazu die Website der HTL Rennweg blockiert.
 
-
 #htl3r.code(caption: "URL-Filter für X.com und www.spengergasse.at", description: none)[
 ```fortios
 config webfilter urlfilter
@@ -380,7 +586,31 @@ end```
 
 === BGP <fgt-bgp>
 
+Damit die gemeinsame Loopback-Adresse von Fav-FW-1 und Fav-FW-2 im öffentlichen Netz erreichbar bzw. bekannt ist, wird ein eBGP-Peering von den Firewalls zu den AS20 Border-Routern (103.152.125.254 und 103.152.126.254) verwendet. Die Firewalls etablieren somit den Standort Wien Favoriten als AS123.
 
+#htl3r.code(caption: "BGP-Konfiguration auf den Firewalls von Wien Favoriten", description: none)[
+```fortios
+config router bgp
+    set as 123
+    config neighbor
+        edit "103.152.126.254"
+            set remote-as 20
+            set update-source "port1"
+        next
+    end
+    config neighbor
+        edit "103.152.125.254"
+            set remote-as 100
+            set update-source "port5"
+        next
+    end
+    config network
+        edit 1
+            set prefix 125.152.103.1 255.255.255.255
+        next
+    end
+end```
+]
 
 === Sonstiges
 
