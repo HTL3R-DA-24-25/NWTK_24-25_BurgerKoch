@@ -132,6 +132,7 @@ ex
     - DHCP Snooping, Dynamic ARP inspection (DAI)
     - Blackhole VLAN auf ungenutzten Interfaces
 
+<<<<<<< HEAD
 #htl3r.code(caption: "Befehle zur Härtung des Fav-Core-1", description: none)[
 ```cisco
 ip arp inspection vlan 10,20,21,30,31,42,100,150,200,210,666
@@ -156,6 +157,8 @@ ex
 ```
 ]
   
+=======
+>>>>>>> 24cec1e (add abbr)
 ==== Bastion
 TODO
 
@@ -400,6 +403,7 @@ Beide Armut-Standorte sind miteinander über einen MPLS Overlay VPN über das Ba
 
 #pagebreak()
 == Viktor-Standort
+<<<<<<< HEAD
 
 Der "Viktor-Standort" ist der zweite Home-Office-Standort der Topologie (nach Praunstraße) und wird statt einem Edge-Router oder einer Firewall durch eine Ubuntu-basierte Linux-Firewall vom öffentlichen Netz abgegrenzt.
 
@@ -461,3 +465,7 @@ iptables -A FORWARD -i Viktor-LAN -o outside -p icmp -j ACCEPT
 iptables -A FORWARD -i outside -o Viktor-LAN -p icmp -m state --state RELATED,ESTABLISHED -j ACCEPT
 ```
 ]
+=======
+TODO
+#pagebreak(weak: true)
+>>>>>>> 24cec1e (add abbr)
