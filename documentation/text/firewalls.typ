@@ -623,6 +623,26 @@ end```
 
 Eine PfSense-Firewall ist eine kostenlose und software-basierte Alternative zu herkömmlichen Hardware-Firewalls von Herstellern wie Cisco oder Fortinet.
 
+Die Konfiguration einer PfSense erfolgt ausschließlich im GUI, hierbei musste nur der IPSec-VPN konfiguriert werden und das Subnet sowie DHCP für das LAN:
+#htl3r.fspace(
+  total-width: 100%,
+  figure(
+    image("../images/screenshots/pfsense_dhcp.png"),
+    caption: [PFSense DHCP]
+  ),
+  figure(
+    image("../images/screenshots/pfsense_lan.png"),
+    caption: [PFSense LAN Interface]
+  )
+)
+#htl3r.fspace(
+  total-width: 100%,
+  figure(
+    image("../images/screenshots/pfsense_ipsec.png"),
+    caption: [PFSense IPSec VPN]
+  )
+)
+
 #htl3r.author("David Koch")
 == Cisco Router
 
@@ -653,7 +673,7 @@ pre-shared-key IchMussFlexen!
 ex
 
 crypto ikev2 profile default
-match identity remote address 13.52.124.1 255.255.255.255 
+match identity remote address 13.52.124.1 255.255.255.255
 authentication local pre-share
 authentication remote pre-share
 keyring local mykeys
