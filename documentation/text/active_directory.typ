@@ -132,6 +132,18 @@ Die Domain-Locals finden auf einem DFS share anwendung, welcher zwei Verzeichnis
 - Sales
 Welche Gruppen wie Zugriff haben ist selbsterklärend.
 
+#htl3r.fspace(
+  total-width: 100%,
+  figure(
+    image("../images/ad/get_ad_user.png"),
+    caption: [Alle AD-Benutzer]
+  ),
+  figure(
+    image("../images/ad/get_ad_group.png"),
+    caption: [Alle AD-Gruppen]
+  )
+)
+
 == PKI
 
 1-tier PKI
@@ -157,37 +169,126 @@ Die CA wurde ausschließlich mit der PowerShell aufgesetzt:
   text: read("../../scripts/windows/Favoriten-CA-part2.ps1")
 )
 
+=== CA Verwendung
+Um ein Anwendungsbeispiel für die CA zu haben, wird die Fortigate mit einer Sub-CA versorgt, damit die Clients dem Captive-Portal vertrauen und ebenso SSL-Inspection aktiviert werden kann:
+
+#htl3r.fspace(
+  total-width: 100%,
+  figure(
+    image("../images/ad/ca_issued.png"),
+    caption: [CA ausgestellte Zertifikate]
+  ),
+  figure(
+    image("../images/ad/ca_templates.png"),
+    caption: [CA Zertifikatsvorlagen]
+  )
+)
+
+#pagebreak(weak: true)
 === IIS Konfiguration
 Der IIS-Server wurde mittels GUI erstellt und beinhaltet folgende Features:
 - Directory Browsing (Nur für CertEnroll-Directory)
 - HTTPS (mittels Cert-Template)
 - URL-Double-Escaping, notwendig für CA
 
+#htl3r.fspace(
+  total-width: 50%,
+  figure(
+    image("../images/ad/iis_bindings.png"),
+    caption: [IIS Bindings]
+  )
+)
+#htl3r.fspace(
+  figure(
+    image("../images/ad/iis_cert.png"),
+    caption: [IIS Zertifikat]
+  )
+)
+
 == NPS
 NPS wurde als Radius-Server für das Captive-Portal verwendet und kann auf alle Domain-User zugreifen. Dadurch kann ein jeder AD-User, um das Internet zu browsen, seinen eigenen Benutzer verwenden. Die Abfragen wurden mittels NPS-Policy auf die FortiGate begrenzt und gelten ebenfalls auch nur für das VLAN der Workstations.
 
+#htl3r.fspace(
+  total-width: 100%,
+  figure(
+    image("../images/ad/nps_clients.png"),
+    caption: [NPS Clients]
+  ),
+  figure(
+    image("../images/ad/nps_conditions.png"),
+    caption: [NPS Conditions]
+  )
+)
+#htl3r.fspace(
+  total-width: 100%,
+  figure(
+    image("../images/ad/nps_policies.png"),
+    caption: [NPS Policies]
+  ),
+  figure(
+    image("../images/ad/captive_portal.png"),
+    caption: [Fortigate Captive-Portal]
+  )
+)
+
+#pagebreak(weak: true)
 == DFS
 Es wurde ein DFS angelegt, welches zwei Shares kombiniert:
 - Management -> DC1
 - Sales -> DC2
 Der Kombinierte DFS Share trägt den Namen "Staff" und wird mittels GPO on Logon gemounted. Auf den Verzeichnisen im DFS liegen Permissions nach AGDLP-Konzept.
 
-== GPOs
+#htl3r.fspace(
+  total-width: 100%,
+  figure(
+    image("../images/ad/dfs_mount.png"),
+    caption: [DFS Automount]
+  ),
+  figure(
+    image("../images/ad/dfs_directories.png"),
+    caption: [DFS Shares]
+  )
+)
 
-- Desktophintergrund setzen und Veränderung verbieten
-- Last logged in User nicht anzeigen
-- Mount Drive
-- PWD Security-Richtlinie
-- Removable Media verbieten
-- Registry-Zugriff einschränken
-- PKI-Zertifikate automatisch enrollen
+#pagebreak(weak: true)
+== GPOs
+Im Überblick wurde folgende GPOs angelegt:
+#htl3r.fspace(
+  total-width: 50%,
+  figure(
+    image("../images/ad/gpos.png"),
+    caption: [GPOs]
+  )
+)
+Man kann erkennen, dass nicht alle GPOs auch Links haben, diese wurden nicht angelegt, da manche der Security-Baseline GPOs inkompatibel mit den VMware-VMs sind und extra Features wie TPMs brauchen. Es wurde probiert VBS zu aktivieren, dies hat jedoch die VMs zerschossen.
+
+Die, mit Abstand, wichtigste GPO ist selbstverständlich der Desktop-Background:
+#htl3r.fspace(
+  total-width: 100%,
+  figure(
+    image("../images/ad/background.png"),
+    caption: [Desktop Background GPO]
+  )
+)
+Da es schwierig sein kann diesen in schlechten Lichtverhältnissen zu begutachten, sollte das Bild mit hoher Bildschirmhelligkeit genossen werden.
 
 === Security Baseline
 Natürlich wurde auch die Windows Security Baseline eingespielt. Die dazugehörigen GPOs kann man sich einfach vom Internet ziehen: https://www.microsoft.com/en-us/download/details.aspx?id=55319
 
-TODO: Heruntergeladene Objekte auflisten
+Es wurden folgende Baseline GPOs genutzt:
+- LGPO
+- PolicyAnalyzer
+- Windows Server 2022 Security Baseline
 
 === LAPS
 LAPS wurde ebenfalls angewand, hiermit werden die Passwörter der Lokalen Administratoren ebenfalls vom AD verwaltet, heruntergeladen werden kann sich der Installer vom Internet: https://www.microsoft.com/en-us/download/details.aspx?id=46899&gt
 
 Auf den DCs wurden die GPOs draufgespielt und auf Computer in einer bestimmte OU namens "LAPS" angewandt. Diese OU wurde speziell für diesen Zweck erstellt.
+
+Da nur die PAW in der LAPS OU ist, hat auch nur diese ein Admin-PWD welches von LAPS gemanaged wird:
+#htl3r.fspace(
+  figure(
+    image("../images/ad/laps_pwd.png"),
+    caption: [LAPS Passwörter]
+  )
+)
