@@ -3,6 +3,8 @@
 #htl3r.author("David Koch")
 = Backbone <backbone>
 
+Damit sich die (Firmen-)Standorte untereinander erreichen können, braucht es ein anspruchsvolles Backbone-Netz.
+
 == Namenskonvention
 
 Alle Geräte im Backbone sind nach der folgenden Namenskonvention benannt:
@@ -43,18 +45,39 @@ Das Backbone besteht aus drei AS's.
 
 === AS20
 
-Besteht aus den Sub-AS's 21 & 22, insgesamt 5 Router (2 in 21 und 3 in 22):
+AS20 ist eine BGP-Confederation und besteht aus den Sub-AS's 21 & 22. Insgesamt sind 5 Router (2 in 21 und 3 in 22) vorhanden:
 - R-AS21-Peer
 - R-AS21-BB
 - R-AS21-Internet
 - R-AS22-Peer
 - R-AS22-BB
 
-Nutzt ein #htl3r.short[mpls] Overlay, #htl3r.short[ospf] Underlay
+#htl3r.fspace(
+  total-width: 70%,
+  figure(
+    image("../images/topology/standorte/as20.png"),
+    caption: [Das AS20]
+  )
+)
+
+Nutzt ein #htl3r.short[rip] (über GRE-Tunnel zwischen Edge-Routern) Overlay, #htl3r.short[ospf] Underlay.
 
 #htl3r.short[bgp] Features:
 - R-AS21-BB dient als Route-Reflector
 - R-AS21-Internet teilt seine Default Route ins Internet den anderen Peers mit
+
+#htl3r.code(caption: "BGP-Konfiguration von R-AS21-Internet", description: none)[
+```cisco
+router bgp 21
+bgp log-neighbor-changes
+bgp confederation identifier 20
+bgp confederation peers 22
+neighbor 20.20.21.2 remote-as 21
+neighbor 20.20.21.2 update-source lo1
+neighbor 20.20.21.2 default-originate
+ex
+```
+]
 
 #align(center, table(
   columns: 5,
@@ -66,18 +89,41 @@ Nutzt ein #htl3r.short[mpls] Overlay, #htl3r.short[ospf] Underlay
   table.cell(rowspan: 2, "172.16.22.0"), table.cell(rowspan: 2, "30"), [R-AS22-Peer], [.1], [Gig0/1], [R-AS22-BB], [.2], [Gig0/1],
 ))
 
-* TODO: Loopback *
-
+#pagebreak()
 === AS100
 
 Besteht aus insgesamt nur 2 Routern:
 - R-AS100-Peer-1
 - R-AS100-Peer-2
 
+#htl3r.fspace(
+  total-width: 50%,
+  figure(
+    image("../images/topology/standorte/as100.png"),
+    caption: [Das AS100]
+  )
+)
+
 Braucht kein Overlay/Underlay, nur i#htl3r.short[bgp] weil das AS aus lediglich zwei Routern besteht.
 
 #htl3r.short[bgp] Features:
 - Distribution Lists (Traffic von Burger-FW wird auf allen Border-Routern blockiert)
+
+#htl3r.code(caption: "Konfiguration der Distribution List auf R-AS100-Peer-1", description: none)[
+```cisco
+ip access-list standard No_Transit_for_Burger
+deny 31.6.14.0 0.0.0.255
+permit any
+ex
+
+router bgp 100
+...
+neighbor 154.30.31.1 remote-as 666
+neighbor 154.30.31.1 update-source g0/0
+neighbor 154.30.31.1 distribute-list No_Transit_for_Burger in
+ex
+```
+]
 
 #align(center, table(
   columns: 5,
@@ -86,8 +132,7 @@ Braucht kein Overlay/Underlay, nur i#htl3r.short[bgp] weil das AS aus lediglich 
   table.cell(rowspan: 2, "192.168.100.0"), table.cell(rowspan: 2, "30"), [R-AS100-Peer-1], [.1], [Gig0/1], [R-AS100-Peer-2], [.2], [Gig0/1],
 ))
 
-* TODO: Loopback *
-
+#pagebreak()
 === AS666
 
 Besteht aus 13 Routern und 2 L2-Switches:
@@ -107,17 +152,88 @@ Besteht aus 13 Routern und 2 L2-Switches:
 - SW-AS666-BB-1
 - SW-AS666-BB-2
 
+#htl3r.fspace(
+  total-width: 90%,
+  figure(
+    image("../images/topology/standorte/as666.png"),
+    caption: [Das AS666]
+  )
+)
+
 Nutzt ein #htl3r.short[ospf] Underlay mit #htl3r.short[mpls] als Overlay.
-
+#pagebreak()
 #htl3r.short[bgp] Features:
-- Pfadmanipulation mittels Local Preference von 100 auf 300 -> Traffic für den Standort Favoriten innerhalb AS666 immer über R-AS666-Peer-2 an AS100 ausschicken statt AS20
-- Prefix-List die alle Bogon-Adressen enthält auf die e#htl3r.short[bgp]-Neighbors inbound angewendet werden, um Bogons zu blockieren
+- Pfadmanipulation mittels Local Preference von 100 auf 300 -> Traffic für den Standort Favoriten innerhalb AS666 immer über R-AS666-Peer-2 an AS100 ausschicken statt AS20.
 
-Unter anderem steht in AS666 ein OOB-Syslog-Server, welcher von den Routern XXX, YYY und ZZZ diverse Logs zu den Protokollen LDP bzw. MPLS, OSPF und BGP gesammelt und gespeichert hat. Bei der Konfiguration von den Debug-Befehlen auf den Routern bleiben diese leider nach einem Neustart des Geräts nicht bestehen, also mussten sie nach jedem (Neu-)Start erneut eingegeben werden. Folgende Debug-Befehle wurden hierbei verwendet:
-- fdfdfd
-- fdfd 
-- hghgghgh
+#htl3r.code(caption: "Route-Map für die Pfadmanipulation per Local Preference Erhöhung", description: none)[
+```cisco
+access-list 1 permit 103.152.126.0 0.0.0.255
+route-map BGP_Localpref_to_FW_Fav
+! match ip address 1
+set local-preference 300
+set ip address prefix-list BOGON-BLOCK
+ex
 
+router bgp 666
+...
+neighbor 154.30.31.2 route-map BGP_Localpref_to_FW_Fav in
+...
+ex
+```
+]
+
+- Prefix-List die alle Bogon-Adressen enthält auf die e#htl3r.short[bgp]-Neighbors inbound angewendet werden, um Bogons zu blockieren.
+- MPLS-Overlay-VPN für die Armut-Standorte, nähere Informationen sind in @mpls-vpn zu finden.
+
+#htl3r.code(caption: "Bogon-Blocking per Prefix-List", description: none)[
+```cisco
+ip prefix-list BOGON-BLOCK deny 0.0.0.0/8
+ip prefix-list BOGON-BLOCK deny 10.0.0.0/8
+...
+ip prefix-list BOGON-BLOCK permit 0.0.0.0/0 le 32
+
+route-map BLOCK-BOGONS deny 10
+match ip address prefix-list BOGON-BLOCK
+route-map BLOCK-BOGONS permit 20
+
+router bgp 666
+...
+neighbor 45.84.107.2 remote-as 20
+neighbor 45.84.107.2 update-source g0/0
+neighbor 45.84.107.2 route-map BLOCK-BOGONS in
+ex
+```
+]
+
+Unter anderem steht in AS666 ein OOB-Syslog-Server, welcher von den Routern R-AS666-BB-2, R-AS666-BB-3, R-AS666-BB-4 und R-AS666-Peer-1 diverse Logs zu den Protokollen LDP bzw. MPLS, OSPF und BGP gesammelt und gespeichert hat. Bei der Konfiguration von den Debug-Befehlen auf den Routern bleiben diese leider nach einem Neustart des Geräts nicht bestehen, also mussten sie nach jedem (Neu-)Start erneut eingegeben werden. Folgende Debug-Befehle wurden hierbei verwendet:
+
+#htl3r.code(caption: "Die für den OOB-Syslog-Server genutzten Debug-Befehle", description: none)[
+```cisco
+debug mpls ldp messages received
+debug mpls ldp bindings
+debug ip ospf hello
+debug ospf promiscuous
+debug ospf monitor
+debug ospf adj
+debug opsf events
+debug ospf ipv4 spf intra
+debug ospf ipv4 spf statistic
+debug ip bgp ipv4 unicast
+debug ip bgp ipv4 multicast
+debug ip bgp in
+debug ip bgp updates in
+debug ip bgp events
+```
+]
+
+Zum Sammeln der Syslogs am OOB-Syslog-Server ist noch folgende Konfiguration nötig:
+#htl3r.code(caption: "Aktivierung von Sys-Logging an den OOB-Syslog-Server", description: none)[
+```cisco
+logging trap 7
+logging host 10.6.66.116
+logging on
+```
+]
 
 #align(center, table(
   columns: 5,
@@ -139,11 +255,11 @@ Unter anderem steht in AS666 ein OOB-Syslog-Server, welcher von den Routern XXX,
   table.cell(rowspan: 2, "10.6.66.200"), table.cell(rowspan: 2, "30"), [R-AS666-Peer-4], [.201], [Gig0/0], [R-AS666-BB-7], [.202], [Gig0/0],
 ))
 
-* TODO: Loopback *
+Jeder Edge-Router hat im AS666 eine eigene Loopback-Adresse, welches für das Interface-unabhängige iBGP-Neighboring verwendet wird. Diese Loopbacks werden über das Underlay OSPF bekanntgegeben.
 
 ==== OOB Syslog
 
-TODO
+Funktioniert sehr ähnlich zum Dorf-File-Server (quasi der Dorf-Syslog-Server), für nähere Informationen siehe @dorf-file.
 
 == Dynamisches Routing
 
@@ -188,10 +304,6 @@ ip rip authentication key-chain 2
 ex
 ```
 ]
-
-*BGP:*
-- Key-String: BeeGeePee!?
-- Algorithmus: ecdsa-384
 
 == Statisches Routing
 

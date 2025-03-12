@@ -98,7 +98,7 @@ nps:
     singular: NPS
   long:
     singular: Network Policy Server
-  description: Ein Server welcher mittels RADIUS, sowie anderen Protokollen, Authentifizierungen von Benutzerkonten durchführen kann.
+  description: Ein Server welcher mittels RADIUS (sowie anderen Protokollen) Authentifizierungen von Benutzerkonten durchführen kann.
 
 pki:
   short:
@@ -112,11 +112,11 @@ paw:
     singular: PAW
   long:
     singular: Privileged Access Workstation
-  description: Eine besonders gut gehärtete Windows-Workstation, welcher es gestattet ist die AD-Domäne zu verwalten. Meist wird dies mittels Jump-Server/Bastion realisiert.
+  description: Eine besonders gut gehärtete Windows-Workstation, welcher es gestattet ist, die AD-Domäne zu verwalten. Meist wird dies mittels Jump-Server/Bastion realisiert.
 
 laps:
   short:
     singular: LAPS
   long:
     singular: Local Administrator Password Solution
-  description: Eine ansammlung an GPOs, welche es ermöglichen die Passwörter von Lokalen Administrator-Benutzer auf Workstations über das AD zu verwalten.
+  description: Eine Ansammlung an GPOs, welche es ermöglichen, die Passwörter von Lokalen Administrator-Benutzer auf Workstations zentral über das AD zu verwalten.

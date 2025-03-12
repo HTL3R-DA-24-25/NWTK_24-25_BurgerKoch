@@ -3,11 +3,11 @@
 #htl3r.author("David Koch")
 = Einführung
 
-Dies ist die Dokumentation des "Little Big Topo"-Projekts der 5ten Klasse Informationstechnologie im Ausbildungszweig Netzwerktechnik der HTL Rennweg. In den folgenden Kapiteln wird ein Überblick über die eingesetzten Konzepte und die für ihre Umsetzung nötigen Konfigurationsschritte geboten.
+Dies ist die Dokumentation des "Little Big Topo"-Projekts der 5ten Klasse Informationstechnologie im Ausbildungszweig Netzwerktechnik der HTL Rennweg. In den folgenden Kapiteln wird ein Überblick über die eingesetzten Konzepte sowie die für ihre Umsetzung nötigen Konfigurationsschritte geboten.
 
 == Ausgangssituation
 
-Die "Little Big Topo" ist eine Aufgabenstellung, die den Entwurf und die Umsetzung einer Topologie, die alle mögliche Features, die in den letzten zwei Jahren im Rahmen des NWT-Unterrichts gelernt worden sind, umfasst.
+Die "Little Big Topo" ist eine Aufgabenstellung, die den Entwurf und die Umsetzung einer Topologie, die alle möglichen Features, die in den letzten zwei Jahren im Rahmen des Netzwerktechnik-Unterrichts gelernt worden sind, umfasst.
 
 == Firma Backstory
 Gartenbedarfs GmbH

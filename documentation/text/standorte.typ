@@ -2,6 +2,8 @@
 
 = Standorte <standorte>
 
+In der Topologie sind insgesamt 9 verschiedene Standorte mit ihren eigenen Geräten vorhanden.
+
 == Wien Favoriten
 
 Wien Favoriten ist der Hauptstandort der Gartenbedarfs GmbH und somit auch der größte in der gesamten Topologie.
@@ -160,15 +162,31 @@ ex
 =======
 >>>>>>> 24cec1e (add abbr)
 ==== Bastion
-TODO
+Die Bastion dient theoretisch der automatischen Provisionierung von den Clients, Servern und Switches am Standort Wien Favoriten mittels Ansible.
 
 ==== Fav-File-Server
-  - SMB-Share
-  - Synchronisiert seine Dateien mit Dorf-File-Server mittels lsyncd
-  - Erhält R-SPAN Daten der Fav-Switches und verarbeitet diese mittels T-Shark und speichert das auf einem Log-Share ab
+- SMB-Share
+- Synchronisiert seine Dateien mit Dorf-File-Server mittels lsyncd
 
 ==== VPN-Server <wireguard>
-Ein WireGuard VPN-Server dient am Standort Wien Favoriten als alternativer RAS-VPN-Endpunkt zum RAS-VPN auf den FortiGate-Firewalls.
+Ein WireGuard VPN-Server dient am Standort Wien Favoriten als alternativer RAS-VPN-Endpunkt zum RAS-VPN auf den FortiGates. Dieser wurde über das Package PiVPN aufgesetzt.
+
+Damit der VPN-Server von außen erreichbar ist, muss auf der Firewall ein "Port Forwarding" stattfinden. Dieses kann auf einer FortiGate wie folgt konfiguriert werden:
+
+#htl3r.code(caption: "Port-Forwarding für den Wireguard VPN-Server", description: none)[
+```fortios
+config firewall vip
+    edit "WireGuard_PF"
+        set extip 31.6.14.1
+        set extintf "port1" "port5"
+        set portforward enable
+        set mappedip 192.168.100.69
+        set extport 51820
+        set mappedport 51820
+    next
+end
+```
+]
 
 ==== Active Directory
 Am Standort Wien Favoriten stehen als AD-integrierte Endgeräte eine CA, zwei DCs, ein Jump-Server, ein Web-Server, ein NPS und mehrere Windows Workstations (darunter eine PAW).
@@ -234,6 +252,8 @@ xx = VLAN-ID, falls das Gerät keinem spezifischen VLAN zugewiesen ist, dann ist
 
 === Features
 
+Folgende Features wurden im Rahmen dieses Standorts implementiert:
+
 ==== FortiGate
 Siehe @fortigate.
 
@@ -248,7 +268,7 @@ Siehe @fortigate.
 
 Für die Konfigurations-Snippets der oben aufgelisteten Switch-Features siehe @switches-fav (Switches in Wien Favoriten).
 
-==== Dorf-File-Server
+==== Dorf-File-Server <dorf-file>
   - Hostet einen SMB-Share.
   - Synchronisiert seine Dateien mit Fav-File-Server mittels lsyncd.
   - Erhält SPAN-Daten des Dorf-Switches, verarbeitet diese mittels T-Shark/TCPDump und speichert das auf einem Log-Share ab.
@@ -368,7 +388,7 @@ exit
 Die Flex-Standorte dienen lediglich der Implementierung eines FlexVPN-Tunnels. Deswegen bestehen sie jeweils nur aus zwei Geräten: Einem Cisco Router als "Firewall" und einem #htl3r.short[vpcs] für Ping-Tests.
 
 #htl3r.fspace(
-  total-width: 40%,
+  total-width: 35%,
   figure(
     image("../images/topology/standorte/flex_standort_2.png"),
     caption: [Der zweite Flex-Standort]
@@ -408,7 +428,7 @@ Beide Armut-Standorte sind miteinander über einen MPLS Overlay VPN über das Ba
 Der "Viktor-Standort" ist der zweite Home-Office-Standort der Topologie (nach Praunstraße) und wird statt einem Edge-Router oder einer Firewall durch eine Ubuntu-basierte Linux-Firewall vom öffentlichen Netz abgegrenzt.
 
 #htl3r.fspace(
-  total-width: 55%,
+  total-width: 25%,
   figure(
     image("../images/topology/standorte/viktor_standort.png"),
     caption: [Der Viktor-Standort]

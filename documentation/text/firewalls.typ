@@ -69,10 +69,6 @@ end
 ```
 ]
 
-=== Lizensierung
-
-
-
 === Policies
 
 Eines der wichtigsten Werkzeuge, die eine FortiGate -- wie viele andere Firewalls auch -- bietet, sind Policies. Standardmäßig lässt eine FortiGate-Firewall keinerlei Datenverkehr durch, ein "implicit deny" wird verwendet. Es müssen durch den/die zuständige Netzwerkadministrator/in beim Einsatz einer FortiGate die nötigen Firewall-Policies "geschnitzt" werden, um den Datenverkehr auf das nötige Minimum einzuschränken, ohne dabei die Funktionalität des (bestehenden) Netzwerks zu beeinträchtigen.
@@ -411,17 +407,42 @@ Der RAS-VPN wurde über die Burger-Workstation am Standort Praunstraße getestet
 
 Bevor die Windows Clients (in VLAN 20) externe Hosts und Dienste erreichen können, müssen sie sich über ein sogenanntes "Captive Portal" bei der Firewall authentifizieren. Für die Authentifizierung wird der AD-integrierte NPS-Server genutzt, als Protokoll wird hierbei RADIUS verwendet.
 
-Um eine "Captive Portal"-Authentifizierung auf einer FortiGate-Firewall zu konfigurieren, muss zuerst der :
+Um eine "Captive Portal"-Authentifizierung auf einer FortiGate-Firewall zu konfigurieren, muss zuerst der NPS-Server in Form eines Benutzers konfiguriert werden:
 
+#htl3r.code(caption: "Erstellung des 'AD-NPS' Benutzers für das Captive Portal", description: none)[
+```fortios
+config user radius
+    edit "AD-NPS"
+        set server "192.168.200.5"
+        set secret cisco
+    next
+end
+...
+config user group
+    edit "Captive_Portal"
+        set member "AD-NPS"
+    next
+...
+end
+```
+]
+
+Nach der Erstellung des Benutzers und der Zuweisung zu einer eigenen (Security-)Gruppe kann auf dem gewünschten (Sub-)Interface die Captive-Portal-Authentifizierung aktiviert werden:
+
+#htl3r.code(caption: "Zuweisung Captive Portal Gruppe zum Interface", description: none)[
+```fortios
+config sys interface
+    edit VLAN_20
+        set security-mode captive-portal
+        set security-groups "Captive_Portal"
+        set device-identification enable
+    next
+end
+```
+]
 
 #htl3r.fspace(
-  figure(
-    image("../images/screenshots/Screenshot 2025-02-19 130103.png"),
-    caption: [Die erfolgreiche Authentifizierung mit AD-Benutzer über RADIUS]
-  )
-)
-
-#htl3r.fspace(
+  total-width: 90%,
   figure(
     image("../images/screenshots/Screenshot 2025-02-19 130103.png"),
     caption: [Die erfolgreiche Authentifizierung mit AD-Benutzer über RADIUS]
@@ -616,7 +637,73 @@ end```
 
 ==== Adressobjekte und Adressgruppen
 
+Für die Konfiguration von Policies und anderen Features auf der FortiGate können oft nicht direkt IP-Adressen bzw. Subnetze angegeben werden. Es müssen zuerst eigene Adressobjekte erstellt werden, die diese Subnetze enthalten, und diese können anschließend in der Policy eingetragen werden.
+
+Zur Gruppierung von mehreren Adressobjekten können Adressgruppen verwendet werden.
+
+Ein Beispiel für die Nutzung von Adressgruppen in unserer Topologie sind die Policies für die site-to-site VPNs, wo mittels Gruppen zwischen den Remote-VLAN-Subnetzen und den lokalen VLAN-Subnetzen unterschieden wird.
+
+#htl3r.code(caption: "Einige der Adressobjekte für VLAN-Subnetze in Favoriten (+ Zuweisung zu Adressgruppe)", description: none)[
+```fortios
+config firewall address
+    edit "Favoriten_VLAN_10"
+        set allow-routing enable
+        set subnet 192.168.10.0 255.255.255.0
+    next
+    edit "Favoriten_VLAN_20"
+        set allow-routing enable
+        set subnet 192.168.20.0 255.255.255.0
+    next
+    edit "Favoriten_VLAN_21"
+        set allow-routing enable
+        set subnet 192.168.21.0 255.255.255.0
+    next
+...
+end
+
+config firewall addrgrp
+    edit "Favoriten_LOCAL"
+        set allow-routing enable
+        set member "Favoriten_VLAN_10" "Favoriten_VLAN_20" "Favoriten_VLAN_21" "Favoriten_VLAN_30" "Favoriten_VLAN_31" "Favoriten_VLAN_42" "Favoriten_VLAN_100" "Favoriten_VLAN_150" "Favoriten_VLAN_200" "Favoriten_VLAN_210"
+        set comment "For site-to-site IPsec-VPN"
+    next
+    edit "Langenzersdorf_REMOTE"
+        set allow-routing enable
+        set member "Langenzersdorf_VLAN_10" "Langenzersdorf_VLAN_20" "Langenzersdorf_VLAN_30" "Langenzersdorf_VLAN_31" "Langenzersdorf_VLAN_100" "Langenzersdorf_VLAN_200"
+        set comment "For site-to-site IPsec-VPN"
+    next
+    edit "Kebapci_REMOTE"
+        set allow-routing enable
+        set member "Kebapci_Subnet"
+        set comment "For site-to-site IPsec-VPN"
+    next
+end
+```
+]
+
+Bei der Blockierung von Bogons (outside-in) wird ebenfalls eine Adressgruppe eingesetzt.
+
 ==== Lokale Benutzer
+
+Für die Authentifizierung bei der Nutzung des RAS-VPNs braucht es Benutzer, die lokal auf der FortiGate konfiguriert werden. Sie können ebenfalls als Alternative zu den Benutzern aus einer bestehenden AD-Struktur über den AD-NPS-Server für z.B. ein Captive Portal eingesetzt werden.
+
+#htl3r.code(caption: "Erstellung des Benutzers 'JulianBurger' für den RAS-VPN", description: none)[
+```fortios
+config user local
+    edit "JulianBurger"
+        set type password
+        set passwd JulianBurger
+    next
+end
+
+config user group
+...
+    edit "RAS_Group"
+        set member "JulianBurger"
+    next
+end
+```
+]
 
 #htl3r.author("Julian Burger")
 == PfSense
@@ -701,3 +788,32 @@ In unserer Topologie ist diese Art von VPN im AS666 -- zwischen den Border-Route
 - Die Border-Router haben VRFs für die Abkapselung der Routen bei Verbindung der Standorte.
 - Die Edge-Router der Standorte peeren mit den Border-Routern über eBGP.
 - In der BGP-Konfiguration der Border-Router werden die Edge-Router in der Addressfamilie "VPNv4" als Nachbarn angegeben.
+
+#htl3r.code(caption: "Konfiguration des MPLS-Overlay-VPNs auf R-AS666-Peer-2 (per VPNv4 Adressfamilie)", description: none)[
+```cisco
+ip vrf Armut-Customer-1
+rd 42069:1
+route-target both 42069:1
+ex
+
+int g0/3
+desc to_Armut_Edge_1
+ip vrf forwarding Armut-Customer-1
+ip address 31.25.42.254 255.255.255.0
+no shut 
+ex
+
+router bgp 666
+network 31.25.42.0 mask 255.255.255.0
+address-family vpnv4
+neighbor 6.6.6.4 activate
+neighbor 6.6.6.4 send-community extended
+ex
+address-family ipv4 vrf Armut-Customer-1
+neighbor 31.25.42.1 remote-as 61
+neighbor 31.25.42.1 update-source g0/3
+neighbor 31.25.42.1 activate
+neighbor 31.25.42.1 next-hop-self
+ex
+```
+]

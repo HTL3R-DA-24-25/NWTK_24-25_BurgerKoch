@@ -13,7 +13,7 @@
 #align(center, 
   rotate(90deg, reflow: true,
     htl3r.fspace(
-      total-width: 100%,
+      total-width: 90%,
       figure(
         image("../images/topology/lbt_v9.png"),
       )
