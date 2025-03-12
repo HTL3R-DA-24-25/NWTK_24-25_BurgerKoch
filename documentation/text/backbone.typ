@@ -141,6 +141,10 @@ Unter anderem steht in AS666 ein OOB-Syslog-Server, welcher von den Routern XXX,
 
 * TODO: Loopback *
 
+==== OOB Syslog
+
+TODO
+
 == Dynamisches Routing
 
 Für den automatischen Routenaustausch innerhalb von den Backbone-Netzwerken werden die dynamischen Routingprotokolle #htl3r.short[ospf] und #htl3r.short[rip] verwendet. Für den externen Routenaustausch zwischen #htl3r.shortpl[as] wird #htl3r.short[bgp] verwendet.

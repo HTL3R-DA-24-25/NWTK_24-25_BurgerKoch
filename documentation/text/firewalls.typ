@@ -75,6 +75,59 @@ end
 
 === Policies
 
+Eines der wichtigsten Werkzeuge, die eine FortiGate -- wie viele andere Firewalls auch -- bietet, sind Policies. Standardmäßig lässt eine FortiGate-Firewall keinerlei Datenverkehr durch, ein "implicit deny" wird verwendet. Es müssen durch den/die zuständige Netzwerkadministrator/in beim Einsatz einer FortiGate die nötigen Firewall-Policies "geschnitzt" werden, um den Datenverkehr auf das nötige Minimum einzuschränken, ohne dabei die Funktionalität des (bestehenden) Netzwerks zu beeinträchtigen.
+
+#htl3r.code(caption: "Interface-Konfigurationsbeispiele auf Fav-FW-1", description: none)[
+```fortios
+config firewall policy
+    edit 20
+        set name "Windows_Clients_to_Servers"
+        set srcintf VLAN_20
+        set dstintf VLAN_200
+        set srcaddr all
+        set dstaddr all
+        set action accept
+        set schedule "always"
+        set service "ALL"
+    next
+end
+```
+]
+
+#htl3r.code(caption: "Interface-Konfigurationsbeispiele auf Fav-FW-1", description: none)[
+```fortios
+config firewall policy
+    edit 24
+        set name "Windows_PAW_to_Jump"
+        set srcintf VLAN_20
+        set dstintf VLAN_210
+        set srcaddr "PAW"
+        set dstaddr all
+        set action accept
+        set schedule "always"
+        set service "RDP"
+    next
+end
+```
+]
+
+#htl3r.code(caption: "Interface-Konfigurationsbeispiele auf Fav-FW-1", description: none)[
+```fortios
+config firewall policy
+    edit 150
+        set name "Bastion_to_Windows_Devices"
+        set srcintf VLAN_150
+        set dstintf VLAN_20 VLAN_200
+        set srcaddr "Bastion"
+        set dstaddr all
+        set action accept
+        set schedule "always"
+        set service "SSH"
+    next
+end
+```
+]
+
 === HA Cluster
 
 Ein #htl3r.long["ha"] Cluster besteht aus zwei oder mehr FortiGates und dient der Ausfallsicherheit durch die automatisierte Konfigurationsduplikation zwischen den Geräten. Bei einem erfolgreichen Clustering verhalten sich die Geräte im Cluster so, als wären sie ein Einziges.
@@ -104,9 +157,7 @@ end
 ```
 ]
 
-Nachdem auf beiden Geräten die richtige Konfiguration vorgenommen worden ist, beginnen sie die gegenseitige Synchronisation ihrer gesamten Konfigurationen:
-
-* BILD *
+Nachdem auf beiden Geräten die richtige Konfiguration vorgenommen worden ist, beginnen sie die gegenseitige Synchronisation ihrer gesamten Konfigurationen.
 
 Zur Überprüfung können folgende Befehle verwendet werden:
 - `fdfdfd`
@@ -146,7 +197,50 @@ end
 
 === DHCP
 
+Für die automatische Zuweisung von IP-Adressen an die Client-Computer wurde auf der FortiGate DHCP konfiguriert. Da manche Clients trotz automatischer IP-Zuweisung dauerhaft die gleiche IP brauchen, z.B. für bestimmte Firewall-Policies, wird zum DHCP-Pool dazu ein Static-Lease für die PAW erstellt.
+
+#htl3r.code(caption: "DHCP-Server-Konfiguration für VLAN 20 (inkl. Static Lease)", description: none)[
+```fortios
+config sys dhcp server
+    edit 1
+        set status enable
+        set lease-time 86400
+        set vci-match disable
+        set interface VLAN_20
+        set dns-server1 192.168.200.1
+        set dns-server2 192.168.200.2
+        set domain "corp.gartenbedarf.com"
+        set default-gateway 192.168.20.254
+        set netmask 255.255.255.0
+        config ip-range
+            edit 1
+                set start-ip 192.168.20.10
+                set end-ip 192.168.20.15
+            next
+        end
+        config reserved-address
+            edit 1
+                set type mac
+                set ip 192.168.20.10
+                set mac 01:23:45:67:89:AB
+                set action assign
+                set description "Static Lease .10 for PAW (Workstation-1)"
+            next
+        end
+    next
+end
+```
+]
+
 === VPNs
+
+Alle VPNs auf den FortiGates sind PSK-basiert.
+
+==== Site-to-Site IPsec VPN
+
+für loopback bgp verteilung: @fgt-bgp.
+
+==== RAS-VPN
 
 === Captive Portal
 
@@ -210,6 +304,8 @@ config firewall shaper traffic-shaper
 end
 ```
 ]
+
+Shaping-Policies gehören konfigurationstechnisch nicht zu den "normalen" Policies, sie müssen mit dem Befehl `config firewall shaping-policy` erstellt werden:
 
 #htl3r.code(caption: "Die Shaping-Policies, die auf den Shaping-Stufen aufbauen", description: none)[
 ```fortios
@@ -282,6 +378,16 @@ config webfilter profile
 end```
 ]
 
+=== BGP <fgt-bgp>
+
+
+
+=== Sonstiges
+
+==== Adressobjekte und Adressgruppen
+
+==== Lokale Benutzer
+
 #htl3r.author("Julian Burger")
 == PfSense
 
@@ -336,7 +442,7 @@ tunnel protection ipsec profile default
 ex```
 ]
 
-=== MPLS Overlay VPN
+=== MPLS Overlay VPN <mpls-vpn>
 
 Falls der Kunde bzw. Standortinhaber die privaten Addressbereiche seiner Standorte per VPN verknüpft haben möchte aber auf seinen Edge-Routern oder Firewalls keinen eigenen VPN-Tunnel konfigurieren möchte, kann vom Betreiber des Backbones ein MPLS Overlay VPN eingesetzt werden.
 

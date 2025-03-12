@@ -36,3 +36,5 @@
 #include "text/standorte.typ"
 
 #include "text/active_directory.typ"
+
+#include "text/appendix.typ"

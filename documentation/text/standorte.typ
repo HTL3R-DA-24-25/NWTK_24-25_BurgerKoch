@@ -187,6 +187,7 @@ Für nähere Informationen siehe @ad. TODO
   - Sind Teil der corp.gardenbedarf.com Domäne
   - Sind in einem private VLAN (20 bzw. 21) und können sich nicht gegenseitig erreichen
 
+#pagebreak()
 == Kebapci
 
 fdfdfdfdfdfd
@@ -201,7 +202,7 @@ fdfdfdfdfdfd
 
 == Praunstraße
 
-fdfdfdfdf
+Der Standort Praunstraße symbolisiert ein kleines Heimnetzwerk, welches von einem Mitarbeiter der Gartenbedarfs GmbH für das Home-OFfice verwendet wird. Hier ist lediglich ein Internetzugriff gegeben, über welchen beispielsweise gesurft und eine RAS-VPN-Verbindung zum Firmenstandort Wien Favoriten aufgebaut werden kann.
 
 #htl3r.fspace(
   total-width: 35%,
@@ -210,6 +211,39 @@ fdfdfdfdf
     caption: [Der Standort Praunstraße]
   )
 )
+
+=== Private VLANs
+
+Da der hier ansässige Mitarbeiter ein großes Bewusstsein für die Cybersicherheit hat, hat er auf seinem Switch private VLANs konfiguriert, damit sich die Endgeräte innerhalb seines Netzwerks nicht untereinander erreichen können.
+
+#htl3r.code(caption: "Private VLANs auf Burger-SW", description: none)[
+```cisco
+vtp mode transparent
+
+vlan 100
+name BURGER-LAN-ISOLATED
+private-vlan isolated
+ex
+
+vlan 10
+name BURGER-LAN
+private-vlan primary
+private-vlan association add 100
+ex
+
+...
+
+int range gig 0/1 - 2
+switchport mode private-vlan host
+switchport private-vlan host-association 10 100
+exit
+
+int gig 0/0
+switchport mode private-vlan promiscuous
+switchport private-vlan mapping 10 100
+exit
+```
+]
 
 #htl3r.author("David Koch")
 == Flex-Standorte
@@ -224,6 +258,10 @@ Die Flex-Standorte dienen lediglich der Implementierung eines FlexVPN-Tunnels. D
   )
 )
 
+=== EIGRP
+
+Damit sich die Endgeräte der Flex-Standorte erreichen können, müssen die Edge-Router vom gegenüberliegenden Netzwerk wissen. Für diesen Routenaustausch wird das Routingprotokoll EIGRP verwendet, da es simpel zu konfigurieren ist und im Vergleich zu anderen Distance-Vektor-Protokollen moderner gestaltet ist (im Vergleich zu RIP z.B.).
+
 #htl3r.code(caption: "EIGRP-Konfiguration auf R-Flex-Edge-2", description: none)[
 ```cisco
 router eigrp 100
@@ -235,6 +273,8 @@ ex```
 
 == Armut-Standorte
 
+Beide Armut-Standorte sind miteinander über einen MPLS Overlay VPN über das Backbone-Netz von AS666 verbunden. Für weitere Informationen siehe @mpls-vpn.
+
 #htl3r.fspace(
   total-width: 55%,
   figure(
@@ -244,4 +284,63 @@ ex```
 )
 
 == Viktor-Standort
-TODO
+
+Der "Viktor-Standort" ist der zweite Home-Office-Standort der Topologie (nach Praunstraße) und wird statt einem Edge-Router oder einer Firewall durch eine Ubuntu-basierte Linux-Firewall vom öffentlichen Netz abgegrenzt.
+
+#htl3r.fspace(
+  total-width: 55%,
+  figure(
+    image("../images/topology/standorte/viktor_standort.png"),
+    caption: [Der Viktor-Standort]
+  )
+)
+
+=== Linux-Firewall
+
+Wie zuvor erwähnt ist die Linux-Firewall am Viktor Standort eine Ubuntu 22.04 VM. Sie regelt den Datenverkehr zwischen dem Viktor-Client und dem öffentlichen Netz, wobei sie lediglich ICMP-Anfragen (und deren Rückantworten) erlaubt.
+
+Für die Konfiguration der Netzwerkadapter wird folgende Netplan-Config verwendet:
+
+#htl3r.code(caption: "Netplan-Konfiguration für die Netzwerkadapter der Linux-Firewall", description: none)[
+```yml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens33:
+      dhcp4: false
+      match:
+        macaddress: 00:0c:29:32:ea:ca
+      set-name: outside
+      addresses:
+        - 31.28.9.1/24
+      gateway4: 31.28.9.254
+      nameservers:
+        addresses: [8.8.8.8, 8.8.4.4]
+    ens37:
+      dhcp4: false
+      match:
+        macaddress: 00:0c:29:32:ea:d4
+      set-name: Viktor-LAN
+      addresses:
+        - 10.69.69.254/24
+```
+]
+
+Alle anderen Ubuntu-basierten Computer in der Topologie werden ebenfalls mittels Netplan (und somit mit ähnlichen Konfigurationsdateien zu der in der Abbildungen oben) konfiguriert.
+
+Damit ein Ubuntu-Gerät zu einer Linux-Firewall wird, muss IP-Routing/Forwarding eingeschaltet und darauf die nötigen iptables-Regeln erstellt werden. Zur Aktivierung von IP-Routing (ACHTUNG: nicht persistent!) können folgende Befehle verwendet werden:
+#htl3r.code(caption: "Aktivierung nicht-persistentes IP-Routing unter Ubuntu", description: none)[
+```bash
+sysctl -w net.ipv4.ip_forward=1
+sysctl -p
+```
+]
+
+Anschließend können z.B. folgende iptables-Regeln gesetzt werden, um einen statischen NAT (PAT) nach außen zu starten und nur ICMP-Datenverkehr durchzulassen:
+#htl3r.code(caption: "iptables-Regeln der Linux-FW", description: none)[
+```bash
+sysctl -w net.ipv4.ip_forward=1
+sysctl -p
+```
+]

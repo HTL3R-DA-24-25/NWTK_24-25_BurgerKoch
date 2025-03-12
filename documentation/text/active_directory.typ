@@ -122,7 +122,7 @@ Innerhalb des ADs existieren folgende Benutzer:
 Die Gruppen sind dann Weiter nach AGDLP wiefolgt unterteilt:
 #htl3r.fspace(
   figure(
-    image("../../images/ad/lbt_agdlp_v1.png"),
+    image("../images/ad/lbt_agdlp_v1.png"),
     caption: [AGDLP]
   )
 )
